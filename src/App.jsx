@@ -1,11 +1,14 @@
+import Header from "./components/Header";
 import Navbar from "./components/Navbar";
+import Tables from "./components/Tables";
+import AddModal from "./components/AddModal";
 export default function App() {
   return (
     <>
       <Navbar />
-      <button className="bg-primary-500 text-white p-4 rounded border-teal-400 border">
-        Test Button
-      </button>
+      <Header />
+      <Tables />
+      <AddModal />
     </>
   );
 }
