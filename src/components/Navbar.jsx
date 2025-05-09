@@ -1,11 +1,16 @@
+import { Link } from "react-router-dom";
+
 export default function Navbar() {
   return (
     <>
       <div className="navbar bg-base-100 shadow-sm shadow-teal-800">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl text-teal-500 normal-case font-bold">
+          <Link
+            to="/"
+            className="btn btn-ghost text-xl text-teal-500 normal-case font-bold"
+          >
             M-Tracker
-          </a>
+          </Link>
         </div>
         <div className="flex gap-2">
           <div className="dropdown dropdown-end">
@@ -27,6 +32,11 @@ export default function Navbar() {
             >
               <li>
                 <a className="justify-between">Profile</a>
+              </li>
+              <li>
+                <Link to="/mychart" className="justify-between">
+                  My Chart
+                </Link>
               </li>
               <li>
                 <a>Settings</a>
