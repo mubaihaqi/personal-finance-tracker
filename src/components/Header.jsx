@@ -40,7 +40,7 @@ export default function Header({ onOpenModal }) {
                 <button
                   type="button"
                   onClick={onOpenModal} // Gunakan prop untuk membuka modal
-                  className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800"
+                  className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800 hover:cursor-pointer"
                 >
                   <svg
                     className="h-3.5 w-3.5 mr-2"

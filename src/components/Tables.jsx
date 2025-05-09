@@ -1,4 +1,8 @@
-export default function Tables({ transactions, onRemoveTransaction }) {
+export default function Tables({
+  transactions,
+  onRemoveTransaction,
+  onEditTransaction,
+}) {
   return (
     <>
       <h2 className="font-bold text-lg mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-600 border-slate-300">
@@ -69,13 +73,12 @@ export default function Tables({ transactions, onRemoveTransaction }) {
                 <td className="px-6 py-4">{transaction.date || "N/A"}</td>
                 <td className="flex items-center px-6 py-4 justify-center">
                   <a
-                    href="#"
+                    onClick={() => onEditTransaction(transaction.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline hover:text-white btn btn-outline btn-info h-8"
                   >
                     Edit
                   </a>
                   <a
-                    href="#"
                     onClick={() => onRemoveTransaction(transaction.id)} // Panggil fungsi hapus
                     className="font-medium text-red-600 dark:text-red-500 hover:underline hover:text-white ms-3 btn btn-outline btn-error h-8"
                   >

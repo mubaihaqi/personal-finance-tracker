@@ -5,26 +5,40 @@ import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
 
 export default function App() {
-  const [transactions, setTransactions] = useState([
-    {
-      id: 1,
-      name: "Batagor Jawa",
-      category: "Makanan & Minuman",
-      amount: 100000,
-      date: "2025-05-06",
-    },
-  ]);
+  const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // State untuk modal
 
   const handleAddTransaction = (transaction) => {
-    setTransactions([...transactions, transaction]);
+    if (editingTransaction) {
+      // Update transaksi yang sedang diedit
+      setTransactions(
+        transactions.map((t) =>
+          t.id === editingTransaction.id
+            ? { ...transaction, id: editingTransaction.id }
+            : t
+        )
+      );
+      setEditingTransaction(null); // Reset transaksi yang sedang diedit
+    } else {
+      // Tambahkan transaksi baru
+      setTransactions([...transactions, transaction]);
+    }
     setIsModalOpen(false); // Tutup modal setelah submit
   };
 
+  const [editingTransaction, setEditingTransaction] = useState(null); // State untuk transaksi yang sedang diedit
   const handleRemoveTransaction = (id) => {
     setTransactions(
       transactions.filter((transaction) => transaction.id !== id)
     );
+  };
+
+  const handleEditTransaction = (id) => {
+    const transactionToEdit = transactions.find(
+      (transaction) => transaction.id === id
+    );
+    setEditingTransaction(transactionToEdit); // Set transaksi yang akan diedit
+    setIsModalOpen(true); // Buka modal
   };
 
   return (
@@ -34,11 +48,16 @@ export default function App() {
       <Tables
         transactions={transactions}
         onRemoveTransaction={handleRemoveTransaction}
+        onEditTransaction={handleEditTransaction}
       />
       <AddModal
         isOpen={isModalOpen} // Kontrol visibilitas modal
         onAddTransaction={handleAddTransaction}
-        onClose={() => setIsModalOpen(false)} // Tutup modal
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingTransaction(null); // Reset transaksi yang sedang diedit saat modal ditutup
+        }}
+        editingTransaction={editingTransaction} // Kirim transaksi yang sedang diedit
       />
     </>
   );

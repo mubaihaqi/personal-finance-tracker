@@ -2,7 +2,12 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import { useState, useRef, useEffect } from "react";
 
-export default function AddModal({ isOpen, onAddTransaction, onClose }) {
+export default function AddModal({
+  isOpen,
+  onAddTransaction,
+  onClose,
+  editingTransaction,
+}) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -28,6 +33,16 @@ export default function AddModal({ isOpen, onAddTransaction, onClose }) {
     { id: 14, name: "Transportasi" },
     { id: 15, name: "Lainnya" },
   ];
+
+  // Isi form dengan data transaksi yang sedang diedit
+  useEffect(() => {
+    if (editingTransaction) {
+      setName(editingTransaction.name);
+      setAmount(editingTransaction.amount.replace(/[^\d]/g, "")); // Hapus format rupiah
+      setDate(editingTransaction.date);
+      setSelectedCategory(editingTransaction.category);
+    }
+  }, [editingTransaction]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -85,11 +100,11 @@ export default function AddModal({ isOpen, onAddTransaction, onClose }) {
           {/* Modal header */}
           <div className="flex items-center justify-between py-4 pt-8 pb-6 border-b-2 rounded-t border-teal-800 mb-7 w-full">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Add Transaction
+              {editingTransaction ? "Edit Transaction" : "Add Transaction"}
             </h3>
             <button
               type="button"
-              className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white hover:cursor-pointer"
               onClick={onClose}
             >
               <svg
@@ -126,6 +141,7 @@ export default function AddModal({ isOpen, onAddTransaction, onClose }) {
               Transaction Name
             </label>
           </div>
+
           {/* Amount Transaksi */}
           <div className="relative z-0 w-full mb-5 group">
             <input
@@ -144,12 +160,13 @@ export default function AddModal({ isOpen, onAddTransaction, onClose }) {
               Transaction Amount
             </label>
           </div>
+
           {/* Date Transaksi */}
           <div className="relative z-0 w-full mb-5 group">
             <Flatpickr
               value={date}
               onChange={(selectedDates) => setDate(selectedDates[0])}
-              options={{ dateFormat: "Y-m-d" }}
+              options={{ dateFormat: "Y-m-d", position: "auto right" }}
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-teal-800 peer"
               placeholder=""
               required
@@ -213,9 +230,9 @@ export default function AddModal({ isOpen, onAddTransaction, onClose }) {
 
           <button
             type="submit"
-            className="text-white text w-1/2 bg-teal-800 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
+            className="text-white text w-1/2 bg-teal-800 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 hover:cursor-pointer"
           >
-            Submit
+            {editingTransaction ? "Update" : "Submit"}
           </button>
         </form>
       </div>
