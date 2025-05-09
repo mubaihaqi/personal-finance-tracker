@@ -1,33 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
 import MyChart from "./mychart";
+import {
+  addTransaction,
+  getTransactions,
+  deleteTransaction,
+  updateTransaction,
+} from "./utils/indexedDB";
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
-  const handleAddTransaction = (transaction) => {
+  // Load data dari IndexedDB saat aplikasi dimuat
+  useEffect(() => {
+    async function fetchTransactions() {
+      const storedTransactions = await getTransactions();
+      setTransactions(storedTransactions);
+    }
+    fetchTransactions();
+  }, []);
+
+  const handleAddTransaction = async (transaction) => {
     if (editingTransaction) {
+      const updatedTransaction = { ...transaction, id: editingTransaction.id };
+      await updateTransaction(updatedTransaction); // Update di IndexedDB
       setTransactions(
         transactions.map((t) =>
-          t.id === editingTransaction.id
-            ? { ...transaction, id: editingTransaction.id }
-            : t
+          t.id === editingTransaction.id ? updatedTransaction : t
         )
       );
       setEditingTransaction(null);
     } else {
-      setTransactions([...transactions, transaction]);
+      const newTransaction = { ...transaction, id: Date.now() };
+      await addTransaction(newTransaction); // Tambahkan ke IndexedDB
+      setTransactions([...transactions, newTransaction]);
     }
     setIsModalOpen(false);
   };
 
-  const handleRemoveTransaction = (id) => {
+  const handleRemoveTransaction = async (id) => {
+    await deleteTransaction(id); // Hapus dari IndexedDB
     setTransactions(
       transactions.filter((transaction) => transaction.id !== id)
     );
@@ -45,7 +63,6 @@ export default function App() {
     <Router>
       <Navbar />
       <Routes>
-        {/* Halaman utama */}
         <Route
           path="/"
           element={
@@ -68,7 +85,6 @@ export default function App() {
             </>
           }
         />
-        {/* Halaman MyChart */}
         <Route path="/mychart" element={<MyChart />} />
       </Routes>
     </Router>
