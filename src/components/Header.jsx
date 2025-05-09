@@ -1,4 +1,4 @@
-export default function Header() {
+export default function Header({ onOpenModal }) {
   return (
     <>
       <section className="bg-gray-50 dark:bg-slate-700 h-auto flex items-center mt-8">
@@ -39,9 +39,8 @@ export default function Header() {
               <div className="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
                 <button
                   type="button"
+                  onClick={onOpenModal} // Gunakan prop untuk membuka modal
                   className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800"
-                  data-modal-target="modalTarget"
-                  data-modal-toggle="modalTarget"
                 >
                   <svg
                     className="h-3.5 w-3.5 mr-2"
@@ -80,6 +79,7 @@ export default function Header() {
                     </svg>
                     Actions
                   </button>
+
                   <div
                     id="actionsDropdown"
                     className="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
@@ -106,6 +106,7 @@ export default function Header() {
                       </a>
                     </div>
                   </div>
+
                   <button
                     id="filterDropdownButton"
                     data-dropdown-toggle="filterDropdown"
@@ -140,6 +141,7 @@ export default function Header() {
                       />
                     </svg>
                   </button>
+
                   <div
                     id="filterDropdown"
                     className="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
