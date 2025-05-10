@@ -21,7 +21,11 @@ export default function App() {
   useEffect(() => {
     async function fetchTransactions() {
       const storedTransactions = await getTransactions();
-      setTransactions(storedTransactions);
+      // Sortir data berdasarkan tanggal (dari terbaru ke terlama)
+      const sortedTransactions = storedTransactions.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setTransactions(sortedTransactions);
     }
     fetchTransactions();
   }, []);
@@ -30,24 +34,34 @@ export default function App() {
     if (editingTransaction) {
       const updatedTransaction = { ...transaction, id: editingTransaction.id };
       await updateTransaction(updatedTransaction); // Update di IndexedDB
+      const updatedTransactions = transactions.map((t) =>
+        t.id === editingTransaction.id ? updatedTransaction : t
+      );
+      // Sortir data setelah update
       setTransactions(
-        transactions.map((t) =>
-          t.id === editingTransaction.id ? updatedTransaction : t
-        )
+        updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
       );
       setEditingTransaction(null);
     } else {
       const newTransaction = { ...transaction, id: Date.now() };
       await addTransaction(newTransaction); // Tambahkan ke IndexedDB
-      setTransactions([...transactions, newTransaction]);
+      const updatedTransactions = [...transactions, newTransaction];
+      // Sortir data setelah menambahkan
+      setTransactions(
+        updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+      );
     }
     setIsModalOpen(false);
   };
 
   const handleRemoveTransaction = async (id) => {
     await deleteTransaction(id); // Hapus dari IndexedDB
+    const updatedTransactions = transactions.filter(
+      (transaction) => transaction.id !== id
+    );
+    // Sortir data setelah penghapusan
     setTransactions(
-      transactions.filter((transaction) => transaction.id !== id)
+      updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     );
   };
 

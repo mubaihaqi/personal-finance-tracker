@@ -13,8 +13,10 @@ export default function AddModal({
   const [date, setDate] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1); // Indeks untuk navigasi keyboard
 
   const dropdownRef = useRef(null); // Referensi untuk elemen dropdown
+  const focusedItemRef = useRef(null); // Referensi untuk item yang difokuskan
 
   const categories = [
     { id: 1, name: "Acara Sosial" },
@@ -43,6 +45,23 @@ export default function AddModal({
       setSelectedCategory(editingTransaction.category);
     }
   }, [editingTransaction]);
+
+  // Tambahkan event listener untuk tombol Esc
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose(); // Tutup modal jika tombol Esc ditekan
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,6 +102,45 @@ export default function AddModal({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Navigasi keyboard untuk dropdown
+  const handleDropdownKeyDown = (event) => {
+    if (event.key === "ArrowDown") {
+      // Navigasi ke bawah
+      setFocusedIndex((prevIndex) =>
+        prevIndex < categories.length - 1 ? prevIndex + 1 : 0
+      );
+    } else if (event.key === "ArrowUp") {
+      // Navigasi ke atas
+      setFocusedIndex((prevIndex) =>
+        prevIndex > 0 ? prevIndex - 1 : categories.length - 1
+      );
+    } else if (event.key === "Enter" && isDropdownOpen) {
+      // Pilih item yang difokuskan
+      if (focusedIndex >= 0 && focusedIndex < categories.length) {
+        setSelectedCategory(categories[focusedIndex].name);
+        setIsDropdownOpen(false);
+        setFocusedIndex(-1); // Reset fokus
+      }
+    }
+  };
+
+  // Scroll otomatis untuk opsi yang difokuskan
+  useEffect(() => {
+    if (focusedItemRef.current) {
+      focusedItemRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [focusedIndex]);
+
+  // Reset fokus saat dropdown ditutup
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      setFocusedIndex(-1);
+    }
+  }, [isDropdownOpen]);
 
   return (
     <div
@@ -183,6 +241,7 @@ export default function AddModal({
             <button
               type="button"
               onClick={() => setIsDropdownOpen((prev) => !prev)}
+              onKeyDown={handleDropdownKeyDown} // Tambahkan handler untuk navigasi keyboard
               className="text-gray-400 inline-flex justify-between focus:outline-none peer-focus:font-medium text-sm px-0 py-2.5 text-center items-center !w-full focus:ring-0 hover:cursor-pointer border-b-2 border-gray-600 appearance-none focus:border-teal-800"
             >
               {selectedCategory || "Transaction Category"}
@@ -209,15 +268,18 @@ export default function AddModal({
                 className="absolute left-12 mt-2 z-10 w-[500px] divide-y divide-gray-100 rounded-lg !bg-slate-950 shadow-sm shadow-teal-800 dark:divide-gray-600"
               >
                 <ul className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200 h-[200px] overflow-y-auto ">
-                  {categories.map((category) => (
+                  {categories.map((category, index) => (
                     <li key={category.id}>
                       <button
                         type="button"
+                        ref={focusedIndex === index ? focusedItemRef : null} // Tambahkan referensi ke item yang difokuskan
                         onClick={() => {
                           setSelectedCategory(category.name);
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full text-left p-2 rounded-md hover:bg-teal-800/75"
+                        className={`w-full text-left p-2 rounded-md hover:bg-teal-800/75 ${
+                          focusedIndex === index ? "bg-teal-800 text-white" : ""
+                        }`}
                       >
                         {category.name}
                       </button>
