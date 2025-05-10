@@ -1,8 +1,47 @@
+import Swal from "sweetalert2";
 export default function Tables({
   transactions,
   onRemoveTransaction,
   onEditTransaction,
+  onSort,
+  sortConfig,
+  selectedTransactions,
+  onSelectTransaction,
+  onSelectAllTransactions,
 }) {
+  const showAlert = (transactionId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You g bisa ngembaliin datanya lagi lho ntar",
+      icon: "warning",
+      showCancelButton: "true",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      background: "#1e293b",
+      color: "#f0f0f0",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+          background: "#1e293b",
+          color: "#f0f0f0",
+        });
+        onRemoveTransaction(transactionId);
+      }
+    });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null;
+    return sortConfig.direction === "asc" ? "▲" : "▼";
+  };
+
+  const isAllSelected =
+    transactions.length > 0 &&
+    selectedTransactions.length === transactions.length;
+
   return (
     <>
       <h2 className="font-bold text-lg mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-600 border-slate-300">
@@ -15,84 +54,45 @@ export default function Tables({
               <th scope="col" className="p-4">
                 <div className="flex items-center">
                   <input
-                    id="checkbox-all-search"
                     type="checkbox"
+                    checked={isAllSelected}
+                    onChange={(e) => onSelectAllTransactions(e.target.checked)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label htmlFor="checkbox-all-search" className="sr-only">
-                    checkbox
-                  </label>
                 </div>
               </th>
-
               <th scope="col" className="px-14 py-3">
-                <div className="w-full inline-flex justify-between items-center">
-                  Nama Transaksi{" "}
-                  <a href="#">
-                    <svg
-                      className="w-3 h-3 ms-1.5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </a>
+                <div
+                  className="w-full inline-flex justify-between items-center cursor-pointer"
+                  onClick={() => onSort("name")}
+                >
+                  Nama Transaksi {getSortIcon("name")}
                 </div>
               </th>
-
               <th scope="col" className="px-14 py-3">
-                <div className="w-full inline-flex justify-between items-center">
-                  Category{" "}
-                  <a href="#">
-                    <svg
-                      className="w-3 h-3 ms-1.5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </a>
+                <div
+                  className="w-full inline-flex justify-between items-center cursor-pointer"
+                  onClick={() => onSort("category")}
+                >
+                  Category {getSortIcon("category")}
                 </div>
               </th>
-
               <th scope="col" className="px-14 py-3">
-                <div className="w-full inline-flex justify-between items-center">
-                  Amount{" "}
-                  <a href="#">
-                    <svg
-                      className="w-3 h-3 ms-1.5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </a>
+                <div
+                  className="w-full inline-flex justify-between items-center cursor-pointer"
+                  onClick={() => onSort("amount")}
+                >
+                  Amount {getSortIcon("amount")}
                 </div>
               </th>
-
               <th scope="col" className="px-14 py-3">
-                <div className="w-full inline-flex justify-between items-center">
-                  Date{" "}
-                  <a href="#">
-                    <svg
-                      className="w-3 h-3 ms-1.5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </a>
+                <div
+                  className="w-full inline-flex justify-between items-center cursor-pointer"
+                  onClick={() => onSort("date")}
+                >
+                  Date {getSortIcon("date")}
                 </div>
               </th>
-
               <th scope="col" className="px-6 py-3 text-center">
                 Action
               </th>
@@ -102,21 +102,16 @@ export default function Tables({
             {transactions.map((transaction) => (
               <tr
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
-                key={transaction.id || transaction.name || Math.random()}
+                key={transaction.id}
               >
                 <td className="w-4 p-4">
                   <div className="flex items-center">
                     <input
-                      id="checkbox-table-search-1"
                       type="checkbox"
+                      checked={selectedTransactions.includes(transaction.id)}
+                      onChange={() => onSelectTransaction(transaction.id)}
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
-                    <label
-                      htmlFor="checkbox-table-search-1"
-                      className="sr-only"
-                    >
-                      checkbox
-                    </label>
                   </div>
                 </td>
                 <th
@@ -136,7 +131,7 @@ export default function Tables({
                     Edit
                   </a>
                   <a
-                    onClick={() => onRemoveTransaction(transaction.id)} // Panggil fungsi hapus
+                    onClick={() => showAlert(transaction.id)}
                     className="font-medium text-red-600 dark:text-red-500 hover:underline hover:text-white ms-3 btn btn-outline btn-error h-8"
                   >
                     Remove

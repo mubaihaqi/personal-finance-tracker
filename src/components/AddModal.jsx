@@ -7,6 +7,7 @@ export default function AddModal({
   onAddTransaction,
   onClose,
   editingTransaction,
+  categories,
 }) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
@@ -15,26 +16,8 @@ export default function AddModal({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1); // Indeks untuk navigasi keyboard
 
-  const dropdownRef = useRef(null); // Referensi untuk elemen dropdown
-  const focusedItemRef = useRef(null); // Referensi untuk item yang difokuskan
-
-  const categories = [
-    { id: 1, name: "Acara Sosial" },
-    { id: 2, name: "Belanja" },
-    { id: 3, name: "Cicilan" },
-    { id: 4, name: "Hiburan" },
-    { id: 5, name: "Keluarga" },
-    { id: 6, name: "Kesehatan" },
-    { id: 7, name: "Makanan & Minuman" },
-    { id: 8, name: "Pembayaran Pinjaman" },
-    { id: 9, name: "Pendidikan" },
-    { id: 10, name: "Tabungan" },
-    { id: 11, name: "Tagihan" },
-    { id: 12, name: "Titipan Pembayaran" },
-    { id: 13, name: "Top Up" },
-    { id: 14, name: "Transportasi" },
-    { id: 15, name: "Lainnya" },
-  ];
+  const dropdownRef = useRef(null);
+  const focusedItemRef = useRef(null);
 
   // Isi form dengan data transaksi yang sedang diedit
   useEffect(() => {
@@ -75,25 +58,25 @@ export default function AddModal({
       ? new Date(date).toISOString().split("T")[0]
       : ""; // Format date to YYYY-MM-DD
     const newTransaction = {
-      id: Date.now(), // Generate unique ID
+      id: Date.now(),
       name,
       category: selectedCategory,
       amount: rupiah,
-      date: formattedDate, // Use formatted date
+      date: formattedDate,
     };
-    onAddTransaction(newTransaction); // Kirim transaksi ke parent
-    setName(""); // Reset form
+    onAddTransaction(newTransaction);
+    setName("");
     setAmount("");
     setDate("");
     setSelectedCategory(null);
-    onClose(); // Tutup modal setelah submit
+    onClose();
   };
 
   // Deteksi klik di luar dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false); // Tutup dropdown jika klik di luar
+        setIsDropdownOpen(false);
       }
     };
 

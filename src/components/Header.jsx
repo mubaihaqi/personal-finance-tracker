@@ -1,8 +1,38 @@
-export default function Header({ onOpenModal }) {
+import Swal from "sweetalert2";
+export default function Header({
+  onOpenModal,
+  categories,
+  onSearchChange,
+  onCategoryChange,
+  onDeleteAll,
+}) {
+  const showAlert = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You g bisa ngembaliin datanya lagi lho ntar",
+      icon: "warning",
+      showCancelButton: "true",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      background: "#1e293b",
+      color: "#f0f0f0",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your transaction has been deleted.",
+          icon: "success",
+          background: "#1e293b",
+          color: "#f0f0f0",
+        });
+        onDeleteAll();
+      }
+    });
+  };
   return (
     <>
       <section className="bg-gray-50 dark:bg-slate-700 h-auto flex items-center mt-8">
-        <div className="max-w-screen-xl px-4 mx-auto lg:px-12 w-full">
+        <div className="max-w-screen-xl mx-auto w-full">
           <div className="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
             <div className="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4 shadow-sm shadow-teal-800">
               <div className="w-full md:w-1/2">
@@ -32,14 +62,17 @@ export default function Header({ onOpenModal }) {
                       className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                       placeholder="Search"
                       required=""
+                      onChange={(e) => onSearchChange(e)}
                     />
                   </div>
                 </form>
               </div>
+
               <div className="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
+                {/* Add Transaction Feature */}
                 <button
                   type="button"
-                  onClick={onOpenModal} // Gunakan prop untuk membuka modal
+                  onClick={onOpenModal}
                   className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800 hover:cursor-pointer"
                 >
                   <svg
@@ -57,7 +90,9 @@ export default function Header({ onOpenModal }) {
                   </svg>
                   Add Transaction
                 </button>
+
                 <div className="flex items-center w-full space-x-3 md:w-auto">
+                  {/* Actions Feature */}
                   <button
                     id="actionsDropdownButton"
                     data-dropdown-toggle="actionsDropdown"
@@ -80,6 +115,7 @@ export default function Header({ onOpenModal }) {
                     Actions
                   </button>
 
+                  {/* Actions Modal */}
                   <div
                     id="actionsDropdown"
                     className="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
@@ -98,15 +134,17 @@ export default function Header({ onOpenModal }) {
                       </li>
                     </ul>
                     <div className="py-1">
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      <button
+                        type="button"
+                        onClick={() => showAlert()}
+                        className="flex items-center rounded-sm justify-start px-4 py-2 text-sm font-medium text-white hover:cursor-pointer w-full hover:bg-red-500"
                       >
-                        Delete all
-                      </a>
+                        Delete All
+                      </button>
                     </div>
                   </div>
 
+                  {/* Filter Feature */}
                   <button
                     id="filterDropdownButton"
                     data-dropdown-toggle="filterDropdown"
@@ -142,6 +180,7 @@ export default function Header({ onOpenModal }) {
                     </svg>
                   </button>
 
+                  {/* Filter Modal */}
                   <div
                     id="filterDropdown"
                     className="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
@@ -149,68 +188,28 @@ export default function Header({ onOpenModal }) {
                     <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                       Category
                     </h6>
-                    {/* <ul
+                    <ul
                       className="space-y-2 text-sm"
                       aria-labelledby="dropdownDefault"
                     >
-                      <li className="flex items-center">
-                        <input
-                          id="apple"
-                          type="checkbox"
-                          value=""
-                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                        />
-                        <label
-                          htmlFor="apple"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                        >
-                          Apple (56)
-                        </label>
-                      </li>
-                      <li className="flex items-center">
-                        <input
-                          id="fitbit"
-                          type="checkbox"
-                          value=""
-                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                        />
-                        <label
-                          htmlFor="fitbit"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                        >
-                          Fitbit (56)
-                        </label>
-                      </li>
-                      <li className="flex items-center">
-                        <input
-                          id="dell"
-                          type="checkbox"
-                          value=""
-                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                        />
-                        <label
-                          htmlFor="dell"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                        >
-                          Dell (56)
-                        </label>
-                      </li>
-                      <li className="flex items-center">
-                        <input
-                          id="asus"
-                          type="checkbox"
-                          value=""
-                          readOnly //ini ntar harus diverify ulang
-                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                        />
-                        <label
-                          htmlFor="asus"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                        >
-                          Asus (97)
-                        </label>
-                      </li>
-                    </ul> */}
+                      {categories.map((category) => (
+                        <li className="flex items-center" key={category.id}>
+                          <input
+                            id={category.id}
+                            type="checkbox"
+                            value={category.name}
+                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                            onChange={() => onCategoryChange(category.name)}
+                          />
+                          <label
+                            htmlFor={category.id}
+                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                          >
+                            {category.name}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
