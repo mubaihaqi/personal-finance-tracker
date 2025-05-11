@@ -44,11 +44,11 @@ export default function Tables({
 
   return (
     <>
-      <h2 className="font-bold text-lg mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-600 border-slate-300">
+      <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-600 border-slate-300 text-center lg:text-start">
         My Transactions
       </h2>
-      <div className="relative overflow-x-auto sm:rounded-lg mx-auto max-w-7xl mt-8 shadow-sm shadow-teal-800 mb-8">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+      <div className="relative overflow-x-auto sm:rounded-lg lg:mx-auto max-w-7xl mt-8  pb-8 mx-3  ">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 shadow-sm shadow-teal-800 rounded-b-xl overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr className="h-10">
               <th scope="col" className="p-4">

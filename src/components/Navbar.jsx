@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import orangGanteng from "../assets/orang-ganteng.jpg";
 export default function Navbar() {
   return (
     <>
@@ -19,11 +19,8 @@ export default function Navbar() {
               role="button"
               className="btn btn-ghost btn-circle avatar"
             >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
+              <div className="w-24 aspect-[1/1] rounded-full border-2 border-teal-600">
+                <img alt="Profile" src={orangGanteng} className="object-top" />
               </div>
             </div>
             <ul

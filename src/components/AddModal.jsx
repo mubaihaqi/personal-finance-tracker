@@ -14,7 +14,8 @@ export default function AddModal({
   const [date, setDate] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState(-1); // Indeks untuk navigasi keyboard
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const nameInputRef = useRef(null);
 
   const dropdownRef = useRef(null);
   const focusedItemRef = useRef(null);
@@ -125,6 +126,12 @@ export default function AddModal({
     }
   }, [isDropdownOpen]);
 
+  useEffect(() => {
+    if (isOpen && nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, [isOpen]);
+
   return (
     <div
       tabIndex="-1"
@@ -170,6 +177,7 @@ export default function AddModal({
           {/* Nama Transaksi */}
           <div className="relative z-0 w-full mb-5 group">
             <input
+              ref={nameInputRef}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}

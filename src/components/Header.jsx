@@ -31,10 +31,10 @@ export default function Header({
   };
   return (
     <>
-      <section className="bg-gray-50 dark:bg-slate-700 h-auto flex items-center mt-8">
+      <section className="h-auto flex items-center mt-8 px-3 lg:px-0">
         <div className="max-w-screen-xl mx-auto w-full">
-          <div className="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-            <div className="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4 shadow-sm shadow-teal-800">
+          <div className="relative sm:rounded-lg">
+            <div className="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4 shadow-sm shadow-teal-800 rounded-xl lg:rounded-md bg-gray-800">
               <div className="w-full md:w-1/2">
                 <form className="flex items-center">
                   <label htmlFor="simple-search" className="sr-only">
@@ -91,7 +91,7 @@ export default function Header({
                   Add Transaction
                 </button>
 
-                <div className="flex items-center w-full space-x-3 md:w-auto">
+                <div className="items-center w-full space-x-3 md:w-auto inline-flex justify-between">
                   {/* Actions Feature */}
                   <button
                     id="actionsDropdownButton"
@@ -148,7 +148,7 @@ export default function Header({
                   <button
                     id="filterDropdownButton"
                     data-dropdown-toggle="filterDropdown"
-                    className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-teal-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-teal-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 mr-0"
                     type="button"
                   >
                     <svg
