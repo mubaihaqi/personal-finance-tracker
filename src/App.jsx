@@ -11,6 +11,7 @@ import {
   deleteTransaction,
   updateTransaction,
 } from "./utils/indexedDB";
+import MonthPicker from "./components/MonthPicker";
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
@@ -20,33 +21,151 @@ export default function App() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [selectedTransactions, setSelectedTransactions] = useState([]);
+  const [selectedMonths, setSelectedMonths] = useState([]);
+  // const [selectedChartMonth, setSelectedChartMonth] = useState(null);
 
   const categories = [
-    { id: 1, name: "Acara Sosial", color: "bg-blue-500", style: "#3b82f6" },
-    { id: 2, name: "Belanja", color: "bg-purple-500", style: "#a855f7" },
-    { id: 3, name: "Cicilan", color: "bg-fuchsia-500", style: "#d946ef" },
-    { id: 4, name: "Hiburan", color: "bg-amber-500", style: "#f59e0b" },
-    { id: 5, name: "Keluarga", color: "bg-sky-500", style: "#0ea5e9" },
-    { id: 6, name: "Kesehatan", color: "bg-pink-500", style: "#ec4899" },
-    { id: 7, name: "Makanan & Minuman", color: "bg-red-500", style: "#ef4444" },
+    {
+      id: 1,
+      name: "Acara Sosial",
+      color: "hover:border-blue-500",
+      style: "#3b82f6",
+    },
+    {
+      id: 2,
+      name: "Belanja",
+      color: "hover:border-purple-500",
+      style: "#a855f7",
+    },
+    {
+      id: 3,
+      name: "Cicilan",
+      color: "hover:border-fuchsia-500",
+      style: "#d946ef",
+    },
+    {
+      id: 4,
+      name: "Hiburan",
+      color: "hover:border-amber-500",
+      style: "#f59e0b",
+    },
+    {
+      id: 5,
+      name: "Keluarga",
+      color: "hover:border-sky-500",
+      style: "#0ea5e9",
+    },
+    {
+      id: 6,
+      name: "Kesehatan",
+      color: "hover:border-pink-500",
+      style: "#ec4899",
+    },
+    {
+      id: 7,
+      name: "Makanan & Minuman",
+      color: "hover:border-red-500",
+      style: "#ef4444",
+    },
     {
       id: 8,
       name: "Pembayaran Pinjaman",
-      color: "bg-violet-500",
+      color: "hover:border-violet-500",
       style: "#8b5cf6",
     },
-    { id: 9, name: "Pendidikan", color: "bg-teal-500", style: "#14b8a6" },
-    { id: 10, name: "Tabungan", color: "bg-indigo-500", style: "#6366f1" },
-    { id: 11, name: "Tagihan", color: "bg-orange-500", style: "#f97316" },
+    {
+      id: 9,
+      name: "Pendidikan",
+      color: "hover:border-teal-500",
+      style: "#14b8a6",
+    },
+    {
+      id: 10,
+      name: "Tabungan",
+      color: "hover:border-indigo-500",
+      style: "#6366f1",
+    },
+    {
+      id: 11,
+      name: "Tagihan",
+      color: "hover:border-orange-500",
+      style: "#f97316",
+    },
     {
       id: 12,
       name: "Titipan Pembayaran",
-      color: "bg-violet-500",
+      color: "hover:border-violet-500",
       style: "#8b5cf6",
     },
-    { id: 13, name: "Top Up", color: "bg-lime-500", style: "#84cc16" },
-    { id: 14, name: "Transportasi", color: "bg-emerald-500", style: "#10b981" },
-    { id: 15, name: "Lainnya", color: "bg-yellow-500", style: "#eab308" },
+    {
+      id: 13,
+      name: "Top Up",
+      color: "hover:border-lime-500",
+      style: "#84cc16",
+    },
+    {
+      id: 14,
+      name: "Transportasi",
+      color: "hover:border-emerald-500",
+      style: "#10b981",
+    },
+    {
+      id: 15,
+      name: "Lainnya",
+      color: "hover:border-yellow-500",
+      style: "#eab308",
+    },
+  ];
+
+  const month = [
+    {
+      id: 1,
+      name: "Januari",
+    },
+    {
+      id: 2,
+      name: "Februari",
+    },
+    {
+      id: 3,
+      name: "Maret",
+    },
+    {
+      id: 4,
+      name: "April",
+    },
+    {
+      id: 5,
+      name: "Mei",
+    },
+    {
+      id: 6,
+      name: "Juni",
+    },
+    {
+      id: 7,
+      name: "Juli",
+    },
+    {
+      id: 8,
+      name: "Agustus",
+    },
+    {
+      id: 9,
+      name: "September",
+    },
+    {
+      id: 10,
+      name: "Oktober",
+    },
+    {
+      id: 11,
+      name: "November",
+    },
+    {
+      id: 12,
+      name: "Desember",
+    },
   ];
 
   // Load data dari IndexedDB saat aplikasi dimuat
@@ -127,9 +246,19 @@ export default function App() {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategories.length === 0 || // Jika tidak ada kategori dipilih, tampilkan semua
-      selectedCategories.includes(transaction.category); // Cocokkan nama kategori
-    return matchesSearch && matchesCategory;
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(transaction.category);
+
+    const transactionMonth = new Date(transaction.date).toLocaleString(
+      "id-ID",
+      {
+        month: "long",
+      }
+    );
+    const matchesMonth =
+      selectedMonths.length === 0 || selectedMonths.includes(transactionMonth);
+
+    return matchesSearch && matchesCategory && matchesMonth;
   });
 
   const handleSort = (key) => {
@@ -209,19 +338,22 @@ export default function App() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log("Transactions (updated):", transactions);
-  // }, [transactions]);
-  // useEffect(() => {
-  //   console.log("Categories:", categories);
-  // }, []);
-
   const getCategoryData = () => {
     return categories.map((category) => {
-      const count = transactions.filter(
+      const filteredTransactions = transactions.filter(
         (transaction) => transaction.category === category.name
-      ).length;
-      return { ...category, count };
+      );
+
+      const totalAmount = filteredTransactions.reduce((sum, transaction) => {
+        const cleanedAmount = parseFloat(
+          transaction.amount.replace(/[^\d]/g, "") // Hapus "Rp" dan tanda titik
+        );
+        return sum + (cleanedAmount || 0);
+      }, 0);
+
+      const count = filteredTransactions.length;
+
+      return { ...category, totalAmount, count };
     });
   };
 
@@ -233,6 +365,30 @@ export default function App() {
       return total + (cleanedAmount || 0);
     }, 0);
   };
+
+  const handleMonthChange = (monthName) => {
+    setSelectedMonths((prevSelected) =>
+      prevSelected.includes(monthName)
+        ? prevSelected.filter((month) => month !== monthName)
+        : [...prevSelected, monthName]
+    );
+  };
+
+  // const handleChartMonthChange = (monthName) => {
+  //   setSelectedChartMonth(monthName);
+  // };
+
+  // Debugging
+  // useEffect(() => {
+  //   console.log("Selected Month:", selectedMonths);
+  // }, [selectedMonths]);
+
+  // useEffect(() => {
+  //   console.log("Transactions (updated):", transactions);
+  // }, [transactions]);
+  // useEffect(() => {
+  //   console.log("Categories:", categories);
+  // }, []);
 
   return (
     <Router>
@@ -258,6 +414,9 @@ export default function App() {
                 selectedTransactions={selectedTransactions}
                 onSelectTransaction={handleSelectTransaction}
                 onSelectAllTransactions={handleSelectAllTransactions}
+                month={month}
+                selectedMonths={selectedMonths}
+                onMonthChange={handleMonthChange}
               />
               <AddModal
                 isOpen={isModalOpen}
@@ -273,11 +432,17 @@ export default function App() {
           }
         />
         <Route
+          path="/monthpicker"
+          element={<MonthPicker month={month} transactions={transactions} />}
+        ></Route>
+        <Route
           path="/mychart"
           element={
             <Chart
               categories={getCategoryData()}
               totalAmount={getTotalAmount()}
+              month={month}
+              transactions={transactions}
             />
           }
         />

@@ -73,7 +73,7 @@ export default function Header({
                 <button
                   type="button"
                   onClick={onOpenModal}
-                  className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800 hover:cursor-pointer"
+                  className="btn btn-outline btn-accent border-2 flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg hover:cursor-pointer"
                 >
                   <svg
                     className="h-3.5 w-3.5 mr-2"
@@ -91,12 +91,12 @@ export default function Header({
                   Add Transaction
                 </button>
 
-                <div className="items-center w-full space-x-3 md:w-auto inline-flex justify-between">
+                <div className="items-center w-full space-x-3 md:w-auto inline-flex justify-between gap-2 lg:gap-3">
                   {/* Actions Feature */}
                   <button
                     id="actionsDropdownButton"
                     data-dropdown-toggle="actionsDropdown"
-                    className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-teal-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    className="flex items-center justify-center w-5/11 px-4 py-2 text-sm font-medium  rounded-lg md:w-auto  focus:z-10 btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0 mr-0"
                     type="button"
                   >
                     <svg
@@ -148,7 +148,7 @@ export default function Header({
                   <button
                     id="filterDropdownButton"
                     data-dropdown-toggle="filterDropdown"
-                    className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-teal-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 mr-0"
+                    className="flex items-center justify-center w-5/11 px-4 py-2 text-sm font-medium  rounded-lg md:w-auto  focus:z-10 btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 mr-0"
                     type="button"
                   >
                     <svg

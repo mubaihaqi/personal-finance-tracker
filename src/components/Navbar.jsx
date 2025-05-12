@@ -36,7 +36,7 @@ export default function Navbar() {
                 </Link>
               </li>
               <li>
-                <a>Settings</a>
+                <Link to="/monthpicker">Month Picker</Link>
               </li>
               <li>
                 <a>Logout</a>

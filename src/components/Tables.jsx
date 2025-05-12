@@ -8,6 +8,9 @@ export default function Tables({
   selectedTransactions,
   onSelectTransaction,
   onSelectAllTransactions,
+  month,
+  selectedMonths,
+  onMonthChange,
 }) {
   const showAlert = (transactionId) => {
     Swal.fire({
@@ -44,9 +47,66 @@ export default function Tables({
 
   return (
     <>
-      <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-600 border-slate-300 text-center lg:text-start">
-        My Transactions
+      <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
+        <p>My Transactions</p>
+
+        <button
+          id="dropdownDefaultButton"
+          data-dropdown-toggle="dropdown"
+          className="text-white btn btn-outline btn-accent border-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center "
+          type="button"
+        >
+          Month
+          <svg
+            className="w-2.5 h-2.5 ms-3"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 10 6"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="m1 1 4 4 4-4"
+            />
+          </svg>
+        </button>
+
+        <div
+          id="dropdown"
+          className="z-10 p-3 hidden bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800"
+        >
+          <h6 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white border-teal-800 border-b-2 pb-1">
+            Month
+          </h6>
+          <ul
+            className="space-y-2 py-1 text-sm text-gray-700 dark:text-gray-200"
+            aria-labelledby="dropdownDefaultButton"
+          >
+            {month.map((m) => (
+              <li key={m.id}>
+                <input
+                  id={m.name}
+                  type="checkbox"
+                  value={m.name}
+                  checked={selectedMonths.includes(m.name)}
+                  className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  onChange={() => onMonthChange(m.name)}
+                />
+                <label
+                  htmlFor={m.name}
+                  className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                >
+                  {m.name}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
       </h2>
+
       <div className="relative overflow-x-auto sm:rounded-lg lg:mx-auto max-w-7xl mt-8  pb-8 mx-3  ">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 shadow-sm shadow-teal-800 rounded-b-xl overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
