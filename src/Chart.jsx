@@ -40,13 +40,15 @@ function Chart({ categories, month, transactions }) {
     return transactionMonth === result?.name;
   });
 
-  // Hitung total pengeluaran bulan ini
-  const totalAmount = filteredTransactions.reduce((sum, transaction) => {
-    const cleanedAmount = parseFloat(
-      transaction.amount.replace(/[^\d]/g, "") // Hapus "Rp" dan tanda titik
-    );
-    return sum + (cleanedAmount || 0);
-  }, 0);
+  // Hitung total pengeluaran bulan ini (hanya type expense)
+  const totalAmount = filteredTransactions
+    .filter((transaction) => transaction.type === "expense")
+    .reduce((sum, transaction) => {
+      const cleanedAmount = parseFloat(
+        transaction.amount.replace(/[^\d]/g, "")
+      );
+      return sum + (cleanedAmount || 0);
+    }, 0);
 
   // Hitung bulan lalu
   const prevMonth = mont === 0 ? 11 : mont - 1;
@@ -136,11 +138,11 @@ function Chart({ categories, month, transactions }) {
               </span>
             </button>
 
-            <div className="text-center w-22 lg:w-44">
-              <h2 className="text-base font-bold lg:text-3xl uppercase text-black">
+            <div className="text-center w-22 lg:w-32">
+              <h2 className="text-base font-bold lg:text-xl uppercase text-black">
                 {result?.name}
               </h2>
-              <p className="text-teal-500 text-base lg:text-3xl font-bold">
+              <p className="text-teal-500 h-auto text-base lg:text-xl font-bold">
                 {year}
               </p>
             </div>
@@ -157,7 +159,7 @@ function Chart({ categories, month, transactions }) {
         </div>
       </h2>
 
-      <div className="block lg:hidden mt-4">
+      <div className="block lg:hidden mt-6">
         <div className="flex items-center justify-center gap-2 lg:gap-4">
           <button
             onClick={handlePrev}
@@ -188,14 +190,14 @@ function Chart({ categories, month, transactions }) {
         </div>
       </div>
 
-      <div className="mt-4 lg:mt-12 lg:inline-flex px-3 lg:px-32 w-full justify-start gap-18 items-start">
-        <div className="w-full lg:w-1/2 px-8 lg:px-12 flex items-center justify-center aspect-auto relative">
+      <div className="mt-6 lg:mt-12 lg:inline-flex px-3 lg:px-32 w-full justify-start gap-0 items-start">
+        <div className="w-full lg:w-1/2 px-8 lg:px-12 lg:pr-28 flex items-center justify-center aspect-auto relative border-teal-700 lg:border-r-2 ">
           <Doughnut data={data} options={options} />
           <div className="absolute top-2/5 lg:top-5/12 text-center px-16 lg:px-40 flex flex-col gap-1">
-            <p className="font-bold text-2xl lg:font-black lg:text-4xl text-teal-500 mb-2">
+            <p className="font-black text-3xl tracking-tight lg:font-black lg:text-4xl text-teal-500 mb-2">
               Rp {totalAmount.toLocaleString("id-ID")}
             </p>
-            <p className="text-base font-medium tracking-normal leading-normal lg:font-semibold lg:text-lg px-8 text-slate-300">
+            <p className="text-base font-medium tracking-normal leading-normal lg:font-semibold lg:text-lg px-6 text-slate-300">
               Kamu mengeluarkan{" "}
               <span
                 className={`font-black tracking-tight ${
@@ -213,7 +215,7 @@ function Chart({ categories, month, transactions }) {
         </div>
 
         {/* Deskription Section */}
-        <div className="z-10 w-auto !h-full lg:w-1/2 p-5 pt-3 border-teal-700 border-t-2 lg:border-t-0 mt-6 lg:mt-0 lg:border-l-2 lg:pl-12 lg:pb-12">
+        <div className="z-10 w-auto !h-full lg:w-1/2 p-5 pt-3 border-teal-700 border-t-2 lg:border-t-0 mt-6 lg:mt-0 lg:pl-12 lg:pb-12">
           <h6 className="mb-3 lg:mb-9 lg:font-bold text-xl font-semibold text-gray-900 dark:text-white">
             Category
           </h6>
@@ -279,6 +281,7 @@ function Chart({ categories, month, transactions }) {
           </ul>
         </div>
       </div>
+      <div className="h-[2px] mx-32 mt-6 lg:mt-10 bg-slate-300"></div>
     </>
   );
 }

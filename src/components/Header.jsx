@@ -91,12 +91,12 @@ export default function Header({
                   Add Transaction
                 </button>
 
-                <div className="items-center w-full space-x-3 md:w-auto inline-flex justify-between gap-2 lg:gap-3">
+                <div className="flex w-full gap-2">
                   {/* Actions Feature */}
                   <button
                     id="actionsDropdownButton"
                     data-dropdown-toggle="actionsDropdown"
-                    className="flex items-center justify-center w-5/11 px-4 py-2 text-sm font-medium  rounded-lg md:w-auto  focus:z-10 btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0 mr-0"
+                    className="flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0"
                     type="button"
                   >
                     <svg
@@ -115,40 +115,11 @@ export default function Header({
                     Actions
                   </button>
 
-                  {/* Actions Modal */}
-                  <div
-                    id="actionsDropdown"
-                    className="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                  >
-                    <ul
-                      className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="actionsDropdownButton"
-                    >
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        >
-                          Mass Edit
-                        </a>
-                      </li>
-                    </ul>
-                    <div className="py-1">
-                      <button
-                        type="button"
-                        onClick={() => showAlert()}
-                        className="flex items-center rounded-sm justify-start px-4 py-2 text-sm font-medium text-white hover:cursor-pointer w-full hover:bg-red-500"
-                      >
-                        Delete All
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Filter Feature */}
                   <button
                     id="filterDropdownButton"
                     data-dropdown-toggle="filterDropdown"
-                    className="flex items-center justify-center w-5/11 px-4 py-2 text-sm font-medium  rounded-lg md:w-auto  focus:z-10 btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 mr-0"
+                    className="flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0"
                     type="button"
                   >
                     <svg
@@ -180,6 +151,35 @@ export default function Header({
                     </svg>
                   </button>
 
+                  {/* Actions Modal */}
+                  <div
+                    id="actionsDropdown"
+                    className="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+                  >
+                    <ul
+                      className="py-1 text-sm text-gray-700 dark:text-gray-200"
+                      aria-labelledby="actionsDropdownButton"
+                    >
+                      <li>
+                        <a
+                          href="#"
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Mass Edit
+                        </a>
+                      </li>
+                    </ul>
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => showAlert()}
+                        className="flex items-center rounded-sm justify-start px-4 py-2 text-sm font-medium text-white hover:cursor-pointer w-full hover:bg-red-500"
+                      >
+                        Delete All
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Filter Modal */}
                   <div
                     id="filterDropdown"
@@ -192,6 +192,23 @@ export default function Header({
                       className="space-y-2 text-sm"
                       aria-labelledby="dropdownDefault"
                     >
+                      {/* Tambahkan opsi Pemasukan */}
+                      <li className="flex items-center" key="income-category">
+                        <input
+                          id="income-category"
+                          type="checkbox"
+                          value="Pemasukan"
+                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                          onChange={() => onCategoryChange("Pemasukan")}
+                        />
+                        <label
+                          htmlFor="income-category"
+                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                        >
+                          Pemasukan
+                        </label>
+                      </li>
+                      {/* Opsi category lainnya */}
                       {categories.map((category) => (
                         <li className="flex items-center" key={category.id}>
                           <input

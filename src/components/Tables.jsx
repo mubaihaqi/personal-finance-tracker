@@ -26,7 +26,7 @@ export default function Tables({
       if (result.isConfirmed) {
         Swal.fire({
           title: "Deleted!",
-          text: "Your file has been deleted.",
+          text: "Your transaction has been deleted.",
           icon: "success",
           background: "#1e293b",
           color: "#f0f0f0",
@@ -74,6 +74,7 @@ export default function Tables({
           </svg>
         </button>
 
+        {/* Filter Month */}
         <div
           id="dropdown"
           className="z-10 p-3 hidden bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800"
@@ -86,7 +87,7 @@ export default function Tables({
             aria-labelledby="dropdownDefaultButton"
           >
             {month.map((m) => (
-              <li key={m.id}>
+              <li key={m.id} className="flex justify-start">
                 <input
                   id={m.name}
                   type="checkbox"
@@ -117,7 +118,7 @@ export default function Tables({
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={(e) => onSelectAllTransactions(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4  bg-gray-100 border-gray-300 rounded text-teal-700 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                   />
                 </div>
               </th>
@@ -161,8 +162,14 @@ export default function Tables({
           <tbody>
             {transactions.map((transaction) => (
               <tr
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
                 key={transaction.id}
+                className={`border-b border-gray-200 dark:border-gray-700
+                ${
+                  transaction.category === "Pemasukan"
+                    ? "bg-green-50 dark:bg-gray-800"
+                    : "bg-white dark:bg-gray-900"
+                }
+                hover:bg-gray-50 dark:hover:bg-gray-600`}
               >
                 <td className="w-4 p-4">
                   <div className="flex items-center">
@@ -170,7 +177,7 @@ export default function Tables({
                       type="checkbox"
                       checked={selectedTransactions.includes(transaction.id)}
                       onChange={() => onSelectTransaction(transaction.id)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      className="w-4 h-4  bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                     />
                   </div>
                 </td>
@@ -181,7 +188,9 @@ export default function Tables({
                   {transaction.name || "N/A"}
                 </th>
                 <td className="px-6 py-4">{transaction.category || "N/A"}</td>
-                <td className="px-6 py-4">{transaction.amount || 0}</td>
+                <td className="px-6 py-4 text-justify">
+                  {transaction.amount || 0}
+                </td>
                 <td className="px-6 py-4">{transaction.date || "N/A"}</td>
                 <td className="flex items-center px-6 py-4 justify-center">
                   <a

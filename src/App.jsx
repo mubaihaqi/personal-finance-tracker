@@ -5,13 +5,13 @@ import Navbar from "./components/Navbar";
 import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
 import Chart from "./Chart";
+import Dashboard from "./Dashboard";
 import {
   addTransaction,
   getTransactions,
   deleteTransaction,
   updateTransaction,
 } from "./utils/indexedDB";
-import MonthPicker from "./components/MonthPicker";
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
@@ -360,7 +360,7 @@ export default function App() {
   const getTotalAmount = () => {
     return transactions.reduce((total, transaction) => {
       const cleanedAmount = parseFloat(
-        transaction.amount.replace(/[^\d]/g, "")
+        transaction.amount.replace(/[^\d]/g, "") // Hapus "Rp" dan tanda titik
       );
       return total + (cleanedAmount || 0);
     }, 0);
@@ -372,6 +372,16 @@ export default function App() {
         ? prevSelected.filter((month) => month !== monthName)
         : [...prevSelected, monthName]
     );
+  };
+
+  const getBalance = () => {
+    const totalIncome = transactions
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + parseFloat(t.amount.replace(/[^\d]/g, "")), 0);
+    const totalExpense = transactions
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + parseFloat(t.amount.replace(/[^\d]/g, "")), 0);
+    return totalIncome - totalExpense;
   };
 
   // const handleChartMonthChange = (monthName) => {
@@ -392,7 +402,7 @@ export default function App() {
 
   return (
     <Router>
-      <Navbar />
+      <Navbar balance={getBalance()} />
       <Routes>
         <Route
           path="/"
@@ -432,9 +442,15 @@ export default function App() {
           }
         />
         <Route
-          path="/monthpicker"
-          element={<MonthPicker month={month} transactions={transactions} />}
-        ></Route>
+          path="/dashboard"
+          element={
+            <Dashboard
+              transactions={transactions}
+              month={month}
+              totalAmount={getTotalAmount()}
+            />
+          }
+        />
         <Route
           path="/mychart"
           element={
