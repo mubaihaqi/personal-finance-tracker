@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Lottie from "lottie-react";
-import Arrow from "../assets/loties/arrow.json";
+import Arrow from "../../assets/loties/arrow.json";
 
 const ArrowAnimation = () => {
   const lottieRef = useRef();

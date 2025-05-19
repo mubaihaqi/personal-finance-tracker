@@ -5,6 +5,8 @@ export default function Header({
   onSearchChange,
   onCategoryChange,
   onDeleteAll,
+  onExportCSV,
+  onImportCSV,
 }) {
   const showAlert = () => {
     Swal.fire({
@@ -29,6 +31,7 @@ export default function Header({
       }
     });
   };
+
   return (
     <>
       <section className="h-auto flex items-center mt-8 px-3 lg:px-0">
@@ -160,20 +163,31 @@ export default function Header({
                       className="py-1 text-sm text-gray-700 dark:text-gray-200"
                       aria-labelledby="actionsDropdownButton"
                     >
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      <li className="p-2 pb-0">
+                        <button
+                          onClick={onExportCSV}
+                          className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md mb-1"
                         >
-                          Mass Edit
-                        </a>
+                          Export to CSV
+                        </button>
+                      </li>
+                      <li className="p-2 pt-0">
+                        <label className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md cursor-pointer">
+                          Import from CSV
+                          <input
+                            type="file"
+                            accept=".csv"
+                            onChange={onImportCSV}
+                            className="hidden"
+                          />
+                        </label>
                       </li>
                     </ul>
-                    <div className="py-1">
+                    <div className="p-2">
                       <button
                         type="button"
                         onClick={() => showAlert()}
-                        className="flex items-center rounded-sm justify-start px-4 py-2 text-sm font-medium text-white hover:cursor-pointer w-full hover:bg-red-500"
+                        className="btn btn-soft btn-error w-full rounded-md"
                       >
                         Delete All
                       </button>

@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-export default function Dashboard({ transactions, month, totalAmount }) {
+export default function Dashboard({ transactions, month }) {
   // Hitung total pemasukan dan pengeluaran per bulan
   const monthlyIncome = Array(12).fill(0);
   const monthlyExpense = Array(12).fill(0);
@@ -119,11 +119,37 @@ export default function Dashboard({ transactions, month, totalAmount }) {
     );
 
   const balance = totalIncome - totalExpense;
-  const total = totalIncome + totalExpense + Math.max(balance, 0); // agar bar balance tetap proporsional
 
-  const incomePercent = total ? (totalIncome / total) * 100 : 0;
-  const expensePercent = total ? (totalExpense / total) * 100 : 0;
-  const balancePercent = total ? (Math.max(balance, 0) / total) * 100 : 0;
+  // Persentase berdasarkan totalIncome
+  const expensePercent = totalIncome ? (totalExpense / totalIncome) * 100 : 0;
+  const balancePercent = totalIncome ? (balance / totalIncome) * 100 : 0;
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  // Total pemasukan sepanjang waktu
+  const totalIncomeAllTime = transactions
+    .filter((t) => t.type === "income")
+    .reduce(
+      (sum, t) => sum + (parseFloat(t.amount.replace(/[^\d]/g, "")) || 0),
+      0
+    );
+
+  // Total pemasukan tahun ini
+  const totalIncomeThisYear = transactions
+    .filter(
+      (t) =>
+        t.type === "income" && new Date(t.date).getFullYear() === currentYear
+    )
+    .reduce(
+      (sum, t) => sum + (parseFloat(t.amount.replace(/[^\d]/g, "")) || 0),
+      0
+    );
+
+  // Persentase pemasukan tahun ini dari total pemasukan
+  const incomeYearPercent = totalIncomeAllTime
+    ? (totalIncomeThisYear / totalIncomeAllTime) * 100
+    : 0;
 
   return (
     <>
@@ -166,33 +192,34 @@ export default function Dashboard({ transactions, month, totalAmount }) {
           </div>
         </div>
 
-        <div className="p-6 pt-4 w-full flex flex-col gap-6 justify-between">
+        <div className="p-6 pt-4 w-full flex flex-col gap-4 justify-between">
           <h2 className="font-bold text-lg lg:text-3xl mb-6 text-teal-500">
-            <p className="pb-3 px-2 text-center border-teal-600">
+            <p className="pb-6 px-2 text-center border-teal-600">
               My Transactions Recap
             </p>
 
-            <div className="text-slate-300 text-center text-lg lg:text-2xl">
-              Total: <span>Rp {totalAmount.toLocaleString("id-ID")}</span>
-            </div>
-
             {/* Bar statistik */}
-            <div className="w-full flex justify-between gap-6 px-12 mx-auto mt-4">
+            <div className="w-full flex justify-between gap-6 px-0 mx-auto mt-4">
               {/* Bar pemasukan */}
-              <div className="flex-1">
+              <div style={{ flex: 1.3 }}>
                 <p className="text-lg font-semibold">
-                  Pemasukan : Rp {totalIncome.toLocaleString("id-ID")}
+                  Pemasukan tahun ini : Rp{" "}
+                  {totalIncomeThisYear.toLocaleString("id-ID")}
                 </p>
                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden flex">
                   <div
                     className="bg-green-500 h-full"
-                    style={{ width: `${incomePercent}%` }}
+                    style={{ width: `${incomeYearPercent}%` }}
                   ></div>
                   <div
                     className="bg-slate-500 h-full"
-                    style={{ width: `${100 - incomePercent}%` }}
+                    style={{ width: `${100 - incomeYearPercent}%` }}
                   ></div>
                 </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Total pemasukan sepanjang waktu: Rp{" "}
+                  {totalIncomeAllTime.toLocaleString("id-ID")}
+                </p>
               </div>
 
               {/* Bar pengeluaran */}

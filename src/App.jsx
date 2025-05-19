@@ -11,6 +11,8 @@ import {
   getTransactions,
   deleteTransaction,
   updateTransaction,
+  exportTransactionsToCSV,
+  importCSVToTransactions,
 } from "./utils/indexedDB";
 
 export default function App() {
@@ -172,7 +174,6 @@ export default function App() {
   useEffect(() => {
     async function fetchTransactions() {
       const storedTransactions = await getTransactions();
-      // Sortir data berdasarkan tanggal (dari terbaru ke terlama)
       const sortedTransactions = storedTransactions.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
@@ -320,6 +321,129 @@ export default function App() {
     setSelectedTransactions([]);
   };
 
+  // Handler Export
+  const handleExportCSV = async () => {
+    const csv = await exportTransactionsToCSV();
+    if (!csv) {
+      alert("Tidak ada data untuk diekspor.");
+      return;
+    }
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "transactions_backup.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Handler Import
+  const handleImportCSV = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    await importCSVToTransactions(file);
+    // Reload data setelah import
+    const storedTransactions = await getTransactions();
+    setTransactions(
+      storedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+    );
+    alert("Import berhasil!");
+  };
+
+  useEffect(() => {
+    async function autoBackup() {
+      const csv = await exportTransactionsToCSV();
+      localStorage.setItem("transactions_autobackup", csv);
+    }
+    if (transactions.length > 0) {
+      autoBackup();
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    async function fetchTransactions() {
+      try {
+        const storedTransactions = await getTransactions();
+        if (storedTransactions.length === 0) {
+          // Cek backup di localStorage
+          const backup = localStorage.getItem("transactions_autobackup");
+          if (backup) {
+            // Restore dari backup CSV
+            const blob = new Blob([backup], { type: "text/csv" });
+            await importCSVToTransactions(blob);
+            const restored = await getTransactions();
+            setTransactions(restored);
+            alert("Data berhasil direstore dari backup otomatis.");
+          }
+        } else {
+          setTransactions(
+            storedTransactions.sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            )
+          );
+        }
+      } catch (e) {
+        alert("Gagal mengakses database. Silakan cek storage browser.");
+      }
+    }
+    fetchTransactions();
+  }, []);
+
+  // Auto Download
+  function autoDownloadCSV(csvString) {
+    if (!csvString) return;
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transactions_autobackup_${new Date()
+      .toISOString()
+      .slice(0, 19)
+      .replace(/[:T]/g, "-")}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Auto Backup 1 hari
+  useEffect(() => {
+    let interval;
+    function startBackupIfMainTab() {
+      // Cek dan set flag di localStorage
+      if (!localStorage.getItem("pftracker_backup_leader")) {
+        localStorage.setItem("pftracker_backup_leader", Date.now());
+        interval = setInterval(async () => {
+          const csv = await exportTransactionsToCSV();
+          autoDownloadCSV(csv);
+        }, 86400000);
+      }
+    }
+
+    startBackupIfMainTab();
+
+    // Jika tab ini ditutup, hapus flag
+    window.addEventListener("beforeunload", () => {
+      if (localStorage.getItem("pftracker_backup_leader")) {
+        localStorage.removeItem("pftracker_backup_leader");
+      }
+    });
+
+    // Jika tab lain dibuka, cek ulang
+    window.addEventListener("storage", (e) => {
+      if (e.key === "pftracker_backup_leader" && !e.newValue) {
+        startBackupIfMainTab();
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      if (localStorage.getItem("pftracker_backup_leader")) {
+        localStorage.removeItem("pftracker_backup_leader");
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (
@@ -384,22 +508,6 @@ export default function App() {
     return totalIncome - totalExpense;
   };
 
-  // const handleChartMonthChange = (monthName) => {
-  //   setSelectedChartMonth(monthName);
-  // };
-
-  // Debugging
-  // useEffect(() => {
-  //   console.log("Selected Month:", selectedMonths);
-  // }, [selectedMonths]);
-
-  // useEffect(() => {
-  //   console.log("Transactions (updated):", transactions);
-  // }, [transactions]);
-  // useEffect(() => {
-  //   console.log("Categories:", categories);
-  // }, []);
-
   return (
     <Router>
       <Navbar balance={getBalance()} />
@@ -414,6 +522,8 @@ export default function App() {
                 categories={categories}
                 onSearchChange={handleSearchChange}
                 onCategoryChange={handleCategoryChange}
+                onExportCSV={handleExportCSV}
+                onImportCSV={handleImportCSV}
               />
               <Tables
                 transactions={sortedTransactions}
@@ -443,13 +553,7 @@ export default function App() {
         />
         <Route
           path="/dashboard"
-          element={
-            <Dashboard
-              transactions={transactions}
-              month={month}
-              totalAmount={getTotalAmount()}
-            />
-          }
+          element={<Dashboard transactions={transactions} month={month} />}
         />
         <Route
           path="/mychart"

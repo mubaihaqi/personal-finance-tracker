@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import ArrowAnimation from "./components/ArrowAnimation";
+import ArrowAnimation from "./components/animations/ArrowAnimation";
+import Calendar from "./components/Calendar";
+import EmptyAnimation from "./components/animations/EmptyAnimation";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -33,11 +35,11 @@ function Chart({ categories, month, transactions }) {
 
   // Filter transaksi untuk bulan ini
   const filteredTransactions = transactions.filter((transaction) => {
-    const transactionMonth = new Date(transaction.date).toLocaleString(
-      "id-ID",
-      { month: "long" }
+    const date = new Date(transaction.date);
+    return (
+      date.getMonth() === mont && // bulan (0-11)
+      date.getFullYear() === year // tahun
     );
-    return transactionMonth === result?.name;
   });
 
   // Hitung total pengeluaran bulan ini (hanya type expense)
@@ -54,17 +56,10 @@ function Chart({ categories, month, transactions }) {
   const prevMonth = mont === 0 ? 11 : mont - 1;
   const prevYear = mont === 0 ? year - 1 : year;
 
-  const prevMonthName = month.find((obj) => obj.id === prevMonth + 1)?.name;
-
   // Filter transaksi untuk bulan lalu
   const prevMonthTransactions = transactions.filter((transaction) => {
-    const transactionDate = new Date(transaction.date);
-    const transactionMonth = transactionDate.toLocaleString("id-ID", {
-      month: "long",
-    });
-    const transactionYear = transactionDate.getFullYear();
-
-    return transactionMonth === prevMonthName && transactionYear === prevYear;
+    const date = new Date(transaction.date);
+    return date.getMonth() === prevMonth && date.getFullYear() === prevYear;
   });
 
   // Hitung total pengeluaran bulan lalu
@@ -122,6 +117,24 @@ function Chart({ categories, month, transactions }) {
       },
     },
   };
+
+  const filteredCalendarTransactions = transactions.filter((transaction) => {
+    const date = new Date(transaction.date);
+    return (
+      date.getMonth() === mont && // bulan (0-11)
+      date.getFullYear() === year // tahun
+    );
+  });
+
+  // console.log("Filter bulan:", mont, "tahun:", year);
+  // console.log(
+  //   "Data transaksi:",
+  //   transactions.map((t) => t.date)
+  // );
+  // console.log(
+  //   "Filtered:",
+  //   filteredCalendarTransactions.map((t) => t.date)
+  // );
 
   return (
     <>
@@ -219,69 +232,95 @@ function Chart({ categories, month, transactions }) {
           <h6 className="mb-3 lg:mb-9 lg:font-bold text-xl font-semibold text-gray-900 dark:text-white">
             Category
           </h6>
-          <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 text-sm">
-            {categoryData
-              .filter((category) => category.totalAmount > 0)
-              .map((category, idx) => (
-                <li key={category.id} className="relative">
-                  <button
-                    onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                    type="button"
-                    className={`w-full text-left text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 flex items-center justify-between border-2 border-transparent hover:cursor-pointer ${category.color}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-4 aspect-[3/2] shadow-2xl rounded-md"
-                        style={{ backgroundColor: category.style }}
-                      ></div>
-                      <span className="text-base font-semibold">
-                        {category.name}
-                      </span>
-                    </div>
-                    <svg
-                      className="w-2.5 h-2.5 ml-3 transform transition-transform duration-300"
-                      style={{
-                        transform:
-                          openIndex === idx ? "rotate(180deg)" : "rotate(0deg)",
-                      }}
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 10 6"
+          {categoryData.filter((category) => category.totalAmount > 0)
+            .length === 0 ? (
+            <div className="flex flex-col items-center justify-between pb-6 h-full">
+              <EmptyAnimation />
+              <p className="mt-4 text-slate-400 text-base text-center">
+                Belum ada transaksi pada bulan ini
+              </p>
+            </div>
+          ) : (
+            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 text-sm">
+              {categoryData
+                .filter((category) => category.totalAmount > 0)
+                .map((category, idx) => (
+                  <li key={category.id} className="relative">
+                    <button
+                      onClick={() =>
+                        setOpenIndex(openIndex === idx ? null : idx)
+                      }
+                      type="button"
+                      className={`w-full text-left text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 flex items-center justify-between border-2 border-transparent hover:cursor-pointer ${category.color}`}
                     >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="m1 1 4 4 4-4"
-                      />
-                    </svg>
-                  </button>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="h-4 aspect-[3/2] shadow-2xl rounded-md"
+                          style={{ backgroundColor: category.style }}
+                        ></div>
+                        <span className="text-base font-semibold">
+                          {category.name}
+                        </span>
+                      </div>
+                      <svg
+                        className="w-2.5 h-2.5 ml-3 transform transition-transform duration-300"
+                        style={{
+                          transform:
+                            openIndex === idx
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                        }}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m1 1 4 4 4-4"
+                        />
+                      </svg>
+                    </button>
 
-                  {openIndex === idx && (
-                    <div className="absolute left-0 mt-2 w-full z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
-                      <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                        <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                          Total:{" "}
-                          <span className="font-medium">
-                            Rp {category.totalAmount.toLocaleString("id-ID")}
-                          </span>
-                        </li>
-                        <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                          Jumlah Data:{" "}
-                          <span className="font-medium">{category.count}</span>{" "}
-                          Transaction
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </li>
-              ))}
-          </ul>
+                    {openIndex === idx && (
+                      <div className="absolute left-0 mt-2 w-full z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+                        <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
+                          <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                            Total:{" "}
+                            <span className="font-medium">
+                              Rp {category.totalAmount.toLocaleString("id-ID")}
+                            </span>
+                          </li>
+                          <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                            Jumlah Data:{" "}
+                            <span className="font-medium">
+                              {category.count}
+                            </span>{" "}
+                            Transaction
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </li>
+                ))}
+            </ul>
+          )}
         </div>
       </div>
+
       <div className="h-[2px] mx-32 mt-6 lg:mt-10 bg-slate-300"></div>
+
+      {/* Calendar */}
+      <div className="px-26 py-8 w-full">
+        <Calendar
+          transactions={filteredCalendarTransactions}
+          currentMonth={mont}
+          currentYear={year}
+        />
+      </div>
     </>
   );
 }
