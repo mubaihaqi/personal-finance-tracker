@@ -7,6 +7,8 @@ import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
 import Chart from "./Chart";
 import Dashboard from "./Dashboard";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import {
   addTransaction,
   getTransactions,
@@ -212,10 +214,14 @@ export default function App() {
     const updatedTransactions = transactions.filter(
       (transaction) => transaction.id !== id
     );
-    // Sortir data setelah penghapusan
     setTransactions(
       updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     );
+
+    // Hapus backup di localStorage jika sudah tidak ada data
+    if (updatedTransactions.length === 0) {
+      localStorage.removeItem("transactions_autobackup");
+    }
   };
 
   const handleEditTransaction = (id) => {
@@ -320,13 +326,28 @@ export default function App() {
 
     setTransactions(updatedTransactions);
     setSelectedTransactions([]);
+
+    // Hapus backup di localStorage jika sudah tidak ada data
+    if (updatedTransactions.length === 0) {
+      localStorage.removeItem("transactions_autobackup");
+    }
   };
 
   // Handler Export
   const handleExportCSV = async () => {
     const csv = await exportTransactionsToCSV();
     if (!csv) {
-      alert("Tidak ada data untuk diekspor.");
+      Swal.fire({
+        toast: true,
+        icon: "info",
+        title: "Tidak ada data untuk diekspor.",
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: "#1e293b",
+        color: "#f0f0f0",
+      });
       return;
     }
     const blob = new Blob([csv], { type: "text/csv" });
@@ -336,9 +357,20 @@ export default function App() {
     a.download = "transactions_backup.csv";
     a.click();
     URL.revokeObjectURL(url);
+
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: "Export berhasil!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#1e293b",
+      color: "#f0f0f0",
+    });
   };
 
-  // Handler Import
   const handleImportCSV = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -348,7 +380,17 @@ export default function App() {
     setTransactions(
       storedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     );
-    alert("Import berhasil!");
+    Swal.fire({
+      toast: true,
+      icon: "success",
+      title: "Import berhasil!",
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#1e293b",
+      color: "#f0f0f0",
+    });
   };
 
   useEffect(() => {
