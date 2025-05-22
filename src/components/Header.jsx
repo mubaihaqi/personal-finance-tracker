@@ -157,7 +157,7 @@ export default function Header({
                   {/* Actions Modal */}
                   <div
                     id="actionsDropdown"
-                    className="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+                    className="z-50 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                   >
                     <ul
                       className="py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -197,7 +197,7 @@ export default function Header({
                   {/* Filter Modal */}
                   <div
                     id="filterDropdown"
-                    className="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
+                    className="z-50  hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
                   >
                     <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                       Category

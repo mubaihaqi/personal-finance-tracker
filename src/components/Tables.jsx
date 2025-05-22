@@ -3,6 +3,11 @@ import { format } from "date-fns";
 import id from "date-fns/locale/id";
 import DotsAnimation from "./animations/DotsAnimation";
 import { useRef, useEffect, useState } from "react";
+import editIcon from "../assets/icons/EditIcon.svg";
+import starIcon from "../assets/icons/StarIcon.svg";
+import photoIcon from "../assets/icons/PhotoIcon.svg";
+import trashIcon from "../assets/icons/TrashIcon.svg";
+import ButtonAction from "./ButtonAction";
 
 export default function Tables({
   transactions,
@@ -16,9 +21,12 @@ export default function Tables({
   month,
   selectedMonths,
   onMonthChange,
+  onToggleFavorite,
   categories,
+  onAddPhoto,
 }) {
   const [dropdownOpenId, setDropdownOpenId] = useState(null);
+  const [previewPhoto, setPreviewPhoto] = useState(null);
   const dropdownModalRef = useRef(null);
 
   const toggleDropdown = (id) => {
@@ -102,6 +110,48 @@ export default function Tables({
 
   const groupedByMonth = groupTransactions(transactions);
 
+  const handleChangeImage = () => {
+    // Cari transaksi yang sedang di-preview
+    const transaction = transactions.find((t) => t.photo === previewPhoto);
+    if (!transaction) return;
+    onAddPhoto(transaction.id);
+  };
+
+  const handleRemoveImage = async () => {
+    const transaction = transactions.find((t) => t.photo === previewPhoto);
+    if (!transaction) return;
+    const result = await Swal.fire({
+      title: "Hapus Foto?",
+      text: "Yakin ni, mau hapus?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yakin bwang",
+      cancelButtonText: "Ntar dlu deh",
+      background: "#1e293b",
+      color: "#f0f0f0",
+    });
+    if (result.isConfirmed) {
+      await onAddPhoto(transaction.id, null);
+      setPreviewPhoto(null);
+    }
+  };
+
+  const handleRemoveImageDropdown = async (transactionId) => {
+    const result = await Swal.fire({
+      title: "Hapus Foto?",
+      text: "Yakin ni, mau hapus?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yakin bwang",
+      cancelButtonText: "Ntar dlu deh",
+      background: "#1e293b",
+      color: "#f0f0f0",
+    });
+    if (result.isConfirmed) {
+      await onAddPhoto(transactionId, null);
+    }
+  };
+
   return (
     <>
       <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
@@ -139,7 +189,7 @@ export default function Tables({
         {/* Filter Month */}
         <div
           id="dropdown"
-          className="z-10 p-3 hidden bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800"
+          className="z-50 p-3 hidden bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800"
         >
           <h6 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white border-teal-800 border-b-2 pb-1">
             Month
@@ -185,7 +235,7 @@ export default function Tables({
                   />
                 </div>
               </th>
-              <th scope="col" className="px-14 py-3">
+              <th scope="col" className="px-9 py-3">
                 <div
                   className="w-full inline-flex justify-between items-center cursor-pointer"
                   onClick={() => onSort("name")}
@@ -216,6 +266,9 @@ export default function Tables({
                 >
                   Date {getSortIcon("date")}
                 </div>
+              </th>
+              <th scope="col" className="px-6 py-3 text-center">
+                Photo
               </th>
               <th scope="col" className="px-6 py-3 text-center">
                 Action
@@ -254,20 +307,80 @@ export default function Tables({
                 <td className="px-6 py-4 text-justify">
                   {transaction.amount || 0}
                 </td>
-                <td className="px-6 py-4">{transaction.date || "N/A"}</td>
-                <td className="flex items-center px-6 py-4 justify-center">
-                  <a
+                <td className="px-6 py-4">
+                  {transaction.date
+                    ? format(new Date(transaction.date), "yyyy-MM-dd")
+                    : "N/A"}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  {transaction.photo ? (
+                    <button
+                      type="button"
+                      className="text-green-500 font-semibold underline hover:text-green-700 transition"
+                      onClick={() => setPreviewPhoto(transaction.photo)}
+                      title="Klik untuk preview"
+                    >
+                      Documented
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 italic">null</span>
+                  )}
+                </td>
+                <td className="flex items-center pr-2 py-4 justify-center gap-2">
+                  <ButtonAction
                     onClick={() => onEditTransaction(transaction.id)}
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline hover:text-white btn btn-outline btn-info h-8"
-                  >
-                    Edit
-                  </a>
-                  <a
+                    icon={
+                      <img
+                        src={editIcon}
+                        alt="edit"
+                        className="w-4 aspect-square"
+                      />
+                    }
+                    bgColor="bg-blue-500"
+                    afterColor="after:bg-blue-800"
+                  />
+                  <ButtonAction
+                    onClick={() => onToggleFavorite(transaction.id)}
+                    icon={
+                      <img
+                        src={starIcon}
+                        alt="star"
+                        className="w-4 aspect-square"
+                      />
+                    }
+                    bgColor={
+                      transaction.favorite ? "bg-yellow-400" : "bg-slate-500"
+                    }
+                    afterColor={
+                      transaction.favorite
+                        ? "after:bg-yellow-600"
+                        : "after:bg-slate-700"
+                    }
+                  />
+                  <ButtonAction
+                    onClick={() => onAddPhoto(transaction.id)}
+                    icon={
+                      <img
+                        src={photoIcon}
+                        alt="photo"
+                        className="w-4 aspect-square"
+                      />
+                    }
+                    bgColor="bg-teal-500"
+                    afterColor="after:bg-teal-800"
+                  />
+                  <ButtonAction
                     onClick={() => showAlert(transaction.id)}
-                    className="font-medium text-red-600 dark:text-red-500 hover:underline hover:text-white ms-3 btn btn-outline btn-error h-8"
-                  >
-                    Remove
-                  </a>
+                    icon={
+                      <img
+                        src={trashIcon}
+                        alt="trash"
+                        className="w-4 aspect-square"
+                      />
+                    }
+                    bgColor="bg-red-500"
+                    afterColor="after:bg-red-800"
+                  />
                 </td>
               </tr>
             ))}
@@ -419,11 +532,28 @@ export default function Tables({
                       return (
                         <div
                           key={transaction.id}
-                          className={`flex items-center gap-3 py-3 pr-1 border bg-slate-800 rounded-lg px-4 cursor-pointer transition duration-700 ${
+                          className={`flex items-center gap-3 py-3 pr-1 border bg-slate-800 rounded-lg px-4 cursor-pointer transition duration-700
+                          ${
+                            transaction.favorite
+                              ? "border-b-2 border-b-amber-500"
+                              : ""
+                          }
+                          ${
+                            transaction.photo
+                              ? "border-t-2 border-t-teal-500"
+                              : ""
+                          }
+                          ${
+                            !transaction.favorite && !transaction.photo
+                              ? "border-b-0 border-t-0"
+                              : ""
+                          }
+                          ${
                             isSelected
                               ? "border-teal-500"
                               : "border-transparent"
-                          }`}
+                          }
+                          `}
                           onClick={() => onSelectTransaction(transaction.id)}
                           tabIndex={0}
                           role="button"
@@ -496,11 +626,30 @@ export default function Tables({
                                 >
                                   Edit
                                 </button>
-                                <button className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30 w-full">
-                                  Add to Favorite
+                                <button
+                                  className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30 w-full"
+                                  onClick={() =>
+                                    onToggleFavorite(transaction.id)
+                                  }
+                                >
+                                  {transaction.favorite
+                                    ? "Remove from Favorite"
+                                    : "Add to Favorite"}
                                 </button>
-                                <button className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30">
-                                  Add Photo
+                                <button
+                                  className="text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30"
+                                  onClick={
+                                    transaction.photo
+                                      ? () =>
+                                          handleRemoveImageDropdown(
+                                            transaction.id
+                                          )
+                                      : () => onAddPhoto(transaction.id)
+                                  }
+                                >
+                                  {transaction.photo
+                                    ? "Remove Photo"
+                                    : "Add Photo"}
                                 </button>
                                 <div className="h-[1px] bg-teal-400 rounded-full w-[90%] mx-auto"></div>
                                 <button
@@ -522,6 +671,40 @@ export default function Tables({
           );
         })}
       </div>
+
+      {/* Modal preview */}
+      {previewPhoto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="bg-slate-800/90 rounded-lg p-4 max-w-xs w-full flex flex-col items-center relative">
+            <button
+              className="absolute top-0 right-3 text-gray-700 hover:text-red-500 text-xl"
+              onClick={() => setPreviewPhoto(null)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <img
+              src={previewPhoto}
+              alt="Transaction Photo"
+              className="max-w-full max-h-80 rounded mb-4"
+            />
+            <div className="h-auto w-full flex gap-2 px-3">
+              <button
+                className="flex-1 flex btn btn-outline btn-info text-sm font-medium px-1 transition-all duration-500 ease-in-out"
+                onClick={handleChangeImage}
+              >
+                Change image
+              </button>
+              <button
+                className="flex-1 flex btn btn-outline btn-error text-sm font-medium px-1 transition-all duration-500 ease-in-out"
+                onClick={handleRemoveImage}
+              >
+                Remove image
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

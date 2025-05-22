@@ -8,9 +8,10 @@ import {
   Tooltip,
   Legend,
   PointElement,
-  LineElement, // Import LineElement untuk line chart
+  LineElement,
 } from "chart.js";
 import orangGanteng from "./assets/orang-ganteng.jpg";
+import FavoriteTransactions from "./components/FavoriteTransactions";
 
 ChartJS.register(
   BarElement,
@@ -39,18 +40,17 @@ export default function Dashboard({ transactions, month }) {
     }
   });
 
-  // Siapkan data untuk chart
+  //data untuk chart
   const data = {
     labels: month.map((m) => m.name),
     datasets: [
       {
         label: "Pemasukan (Rp)",
         data: month.map((m, idx) => {
-          // Cari index bulan di array month (pastikan urutannya benar)
-          const monthIdx = idx; // idx dari array month
+          const monthIdx = idx;
           return monthlyIncome[monthIdx] || 0;
         }),
-        backgroundColor: "rgba(34,197,94,0.7)", // hijau
+        backgroundColor: "rgba(34,197,94,0.7)",
         borderColor: "rgba(22,163,74,1)",
         borderWidth: 1,
         type: "bar",
@@ -61,7 +61,7 @@ export default function Dashboard({ transactions, month }) {
           const monthIdx = idx;
           return monthlyExpense[monthIdx] || 0;
         }),
-        backgroundColor: "rgba(239,68,68,0.7)", // merah
+        backgroundColor: "rgba(239,68,68,0.7)",
         borderColor: "rgba(220,38,38,1)",
         borderWidth: 1,
         type: "bar",
@@ -76,7 +76,7 @@ export default function Dashboard({ transactions, month }) {
         display: false,
       },
       tooltip: {
-        bodyColor: "#14b8a6", // teal-500
+        bodyColor: "#14b8a6",
         callbacks: {
           label: (context) => `Rp ${context.raw.toLocaleString("id-ID")}`,
         },
@@ -85,20 +85,20 @@ export default function Dashboard({ transactions, month }) {
     scales: {
       x: {
         ticks: {
-          color: "#14b8a6", // teal-500 untuk label X
+          color: "#14b8a6",
         },
         grid: {
-          color: "#0f766e", // teal-700 untuk garis grid X
+          color: "#0f766e",
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          color: "#14b8a6", // teal-500 untuk label Y
+          color: "#14b8a6",
           callback: (value) => `Rp ${value.toLocaleString("id-ID")}`,
         },
         grid: {
-          color: "#115e59", // teal-700 untuk garis grid Y
+          color: "#115e59",
         },
       },
     },
@@ -158,7 +158,7 @@ export default function Dashboard({ transactions, month }) {
       </h2>
 
       <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
-        <div className="w-full px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
+        <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
           <div className="w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out">
             <img alt="Profile" src={orangGanteng} className="object-top" />
             {/* <img
@@ -168,9 +168,11 @@ export default function Dashboard({ transactions, month }) {
             /> */}
           </div>
           <div className="w-full flex flex-col justify-start items-center gap-2">
-            <p className="text-center w-full font-semibold lg:font-black text-base lg:text-xl text-transparent bg-gradient-to-r from-teal-600 via-teal-500 to-teal-700 bg-clip-text ">
-              Muhammad Umar Baihaqi
-            </p>
+            <a href="" className="w-full inline-flex justify-center">
+              <p className="text-center w-full font-bold lg:font-black text-lg lg:text-xl text-teal-500">
+                Muhammad Umar Baihaqi
+              </p>
+            </a>
             <div className="px-1 lg:px-3 w-full text-start gap-1 flex flex-col font-normal lg:font-medium text-sm lg:text-base mb-3">
               <p className="inline-flex justify-between">
                 Pekerjaan : <span>Software Engineer</span>
@@ -269,6 +271,14 @@ export default function Dashboard({ transactions, month }) {
               className="lg:!w-full h-[200px] lg:!h-full"
             />
           </div>
+        </div>
+      </div>
+      <h2 className="font-bold text-md lg:text-2xl mx-3 lg:mx-32 px-4 mt-2 lg:mt-4 border-b-2 pb-2 lg:pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
+        <p>My Favorite Transactions</p>
+      </h2>
+      <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
+        <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
+          <FavoriteTransactions transactions={transactions} />
         </div>
       </div>
     </>

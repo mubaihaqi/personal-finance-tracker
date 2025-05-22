@@ -183,7 +183,7 @@ function Chart({ categories, month, transactions }) {
             </span>
           </button>
 
-          <div className="text-center w-22 lg:w-44">
+          <div className="text-center w-22">
             <h2 className="text-base font-bold lg:text-3xl uppercase text-black">
               {result?.name}
             </h2>
@@ -194,7 +194,7 @@ function Chart({ categories, month, transactions }) {
 
           <button
             onClick={handleNext}
-            className=" rounded-full !overflow-hidden w-6 lg:w-9 aspect-[1/1] flex items-center justify-center border-2 border-accent hover:bg-slate-800 transition-all ease-in-out duration-500 hover:cursor-pointer hover:border-teal-600 border-dotted hover:border-solid hover:shadow-sm inset-shadow-xs hover:shadow-teal-500"
+            className=" rounded-full !overflow-hidden w-6 aspect-[1/1] flex items-center justify-center border-2 border-accent hover:bg-slate-800 transition-all ease-in-out duration-500 hover:cursor-pointer hover:border-teal-600 border-dotted hover:border-solid hover:shadow-sm inset-shadow-xs hover:shadow-teal-500"
           >
             <span className="text-xs">
               <ArrowAnimation />
@@ -207,10 +207,10 @@ function Chart({ categories, month, transactions }) {
         <div className="w-full lg:w-1/2 px-8 lg:px-12 lg:pr-28 flex items-center justify-center aspect-auto relative border-teal-700 lg:border-r-2 ">
           <Doughnut data={data} options={options} />
           <div className="absolute top-2/5 lg:top-5/12 text-center px-16 lg:px-40 flex flex-col gap-1">
-            <p className="font-black text-3xl tracking-tight lg:font-black lg:text-4xl text-teal-500 mb-2">
+            <p className="font-black text-2xl tracking-tight lg:font-black lg:text-4xl text-teal-500 mb-[1px]">
               Rp {totalAmount.toLocaleString("id-ID")}
             </p>
-            <p className="text-base font-medium tracking-normal leading-normal lg:font-semibold lg:text-lg px-6 text-slate-300">
+            <p className="text-sm font-medium tracking-normal leading-normal lg:font-semibold lg:text-lg px-6 text-slate-300">
               Kamu mengeluarkan{" "}
               <span
                 className={`font-black tracking-tight ${

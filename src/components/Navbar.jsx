@@ -10,7 +10,7 @@ export default function Navbar({ balance }) {
         <div className="flex-1">
           <Link
             to="/"
-            className="btn btn-ghost text-xl text-teal-500 normal-case font-bold"
+            className="ps-4 text-xl text-teal-500 hover:text-teal-600 hover:scale-90 duration-700 transition-all ease-in-out normal-case font-bold"
           >
             M-Tracker
           </Link>

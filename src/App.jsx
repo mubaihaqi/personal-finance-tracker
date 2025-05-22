@@ -219,7 +219,7 @@ export default function App() {
       updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     );
 
-    // Hapus backup di localStorage jika sudah tidak ada data
+    // Hapus backup di localStorage kalau sudah tidak ada data
     if (updatedTransactions.length === 0) {
       localStorage.removeItem("transactions_autobackup");
     }
@@ -244,8 +244,8 @@ export default function App() {
       setSelectedCategories(
         (prevSelected) =>
           prevSelected.includes(categoryName)
-            ? prevSelected.filter((name) => name !== categoryName) // Hapus kategori jika sudah dipilih
-            : [...prevSelected, categoryName] // Tambahkan kategori jika belum dipilih
+            ? prevSelected.filter((name) => name !== categoryName) // Hapus kategori kalau sudah dipilih
+            : [...prevSelected, categoryName] // Tambahkan kategori kalau belum dipilih
       );
     }
   };
@@ -280,7 +280,7 @@ export default function App() {
   };
 
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    if (!sortConfig.key) return 0; // Jika tidak ada kolom yang disortir
+    if (!sortConfig.key) return 0; // kalau tidak ada kolom yang disortir
     const { key, direction } = sortConfig;
 
     let comparison = 0;
@@ -299,8 +299,8 @@ export default function App() {
     setSelectedTransactions(
       (prevSelected) =>
         prevSelected.includes(id)
-          ? prevSelected.filter((transactionId) => transactionId !== id) // Hapus jika sudah dipilih
-          : [...prevSelected, id] // Tambahkan jika belum dipilih
+          ? prevSelected.filter((transactionId) => transactionId !== id) // Hapus kalau sudah dipilih
+          : [...prevSelected, id] // Tambahkan kalau belum dipilih
     );
   };
 
@@ -326,7 +326,7 @@ export default function App() {
     setTransactions(updatedTransactions);
     setSelectedTransactions([]);
 
-    // Hapus backup di localStorage jika sudah tidak ada data
+    // Hapus backup di localStorage kalau sudah tidak ada data
     if (updatedTransactions.length === 0) {
       localStorage.removeItem("transactions_autobackup");
     }
@@ -464,14 +464,14 @@ export default function App() {
 
     startBackupIfMainTab();
 
-    // Jika tab ini ditutup, hapus flag
+    // kalau tab ini ditutup, hapus flag
     window.addEventListener("beforeunload", () => {
       if (localStorage.getItem("pftracker_backup_leader")) {
         localStorage.removeItem("pftracker_backup_leader");
       }
     });
 
-    // Jika tab lain dibuka, cek ulang
+    // kalau tab lain dibuka, cek ulang
     window.addEventListener("storage", (e) => {
       if (e.key === "pftracker_backup_leader" && !e.newValue) {
         startBackupIfMainTab();
@@ -550,6 +550,64 @@ export default function App() {
     return totalIncome - totalExpense;
   };
 
+  const handleToggleFavorite = async (id) => {
+    const transaction = transactions.find((t) => t.id === id);
+    if (!transaction) return;
+    const updatedTransaction = {
+      ...transaction,
+      favorite: !transaction.favorite,
+    };
+    await updateTransaction(updatedTransaction);
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === id ? updatedTransaction : t))
+    );
+  };
+
+  const handleAddPhoto = async (transactionId, photoBase64 = undefined) => {
+    const transaction = transactions.find((t) => t.id === transactionId);
+    if (!transaction) return;
+
+    // kalau photoBase64 === null, artinya hapus foto
+    if (photoBase64 === null) {
+      const updatedTransaction = { ...transaction, photo: null };
+      await updateTransaction(updatedTransaction);
+      setTransactions((prev) =>
+        prev.map((t) => (t.id === transactionId ? updatedTransaction : t))
+      );
+      return;
+    }
+
+    // kalau photoBase64 undefined, buka file picker
+    if (typeof photoBase64 === "undefined") {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const base64 = event.target.result;
+          const updatedTransaction = { ...transaction, photo: base64 };
+          await updateTransaction(updatedTransaction);
+          setTransactions((prev) =>
+            prev.map((t) => (t.id === transactionId ? updatedTransaction : t))
+          );
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+      return;
+    }
+
+    // kalau photoBase64 ada (bukan null/undefined), update foto langsung
+    const updatedTransaction = { ...transaction, photo: photoBase64 };
+    await updateTransaction(updatedTransaction);
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === transactionId ? updatedTransaction : t))
+    );
+  };
+
   return (
     <Router>
       <Navbar balance={getBalance()} />
@@ -580,6 +638,8 @@ export default function App() {
                 selectedMonths={selectedMonths}
                 onMonthChange={handleMonthChange}
                 categories={categories}
+                onToggleFavorite={handleToggleFavorite}
+                onAddPhoto={handleAddPhoto}
               />
               <AddModal
                 isOpen={isModalOpen}

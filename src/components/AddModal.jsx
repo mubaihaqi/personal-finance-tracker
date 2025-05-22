@@ -80,6 +80,7 @@ export default function AddModal({
       amount: rupiah,
       date: finalDate,
       type,
+      favorite: editingTransaction?.favorite || false,
     };
     onAddTransaction(newTransaction);
     setName("");
@@ -207,7 +208,9 @@ export default function AddModal({
               />
               <label
                 htmlFor="income"
-                className="h-auto w-full cursor-pointer rounded-lg border-2 px-1 py-2 btn btn-accent btn-soft"
+                className={`h-auto w-full cursor-pointer rounded-lg border-2 px-1 py-2 btn btn-accent btn-soft
+        ${type === "income" ? "bg-teal-500 text-white border-teal-600" : ""}
+      `}
               >
                 Pemasukan
               </label>
@@ -226,7 +229,9 @@ export default function AddModal({
               />
               <label
                 htmlFor="expense"
-                className="h-auto w-full cursor-pointer rounded-lg border-2 px-1 py-2 btn btn-accent btn-soft"
+                className={`h-auto w-full cursor-pointer rounded-lg border-2 px-1 py-2 btn btn-accent btn-soft
+        ${type === "expense" ? "bg-teal-500 text-white border-teal-600" : ""}
+      `}
               >
                 Pengeluaran
               </label>
