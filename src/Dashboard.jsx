@@ -157,30 +157,35 @@ export default function Dashboard({ transactions, month }) {
         <p>My Dashboard</p>
       </h2>
 
-      <div className="flex items-start justify-between mt-12 lg:mx-32">
-        <div className=" px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6">
-          <div className="w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out">
+      <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
+        <div className="w-full px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
+          <div className="w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out">
             <img alt="Profile" src={orangGanteng} className="object-top" />
+            {/* <img
+              alt="Profile"
+              src="https://picsum.photos/720"
+              className="object-top"
+            /> */}
           </div>
           <div className="w-full flex flex-col justify-start items-center gap-2">
-            <p className="text-center w-full font-black text-xl text-transparent bg-gradient-to-r from-teal-600 via-teal-500 to-teal-700 bg-clip-text">
+            <p className="text-center w-full font-semibold lg:font-black text-base lg:text-xl text-transparent bg-gradient-to-r from-teal-600 via-teal-500 to-teal-700 bg-clip-text ">
               Muhammad Umar Baihaqi
             </p>
-            <div className="w-full text-start gap-1 flex flex-col font-medium text-base mb-3">
-              <p className="inline-flex justify-between pr-20">
+            <div className="px-1 lg:px-3 w-full text-start gap-1 flex flex-col font-normal lg:font-medium text-sm lg:text-base mb-3">
+              <p className="inline-flex justify-between">
                 Pekerjaan : <span>Software Engineer</span>
               </p>
-              <p className="inline-flex justify-between pr-20">
+              <p className="inline-flex justify-between">
                 Penghasilan : <span>RP 500.000.000 </span>
               </p>
-              <p className="inline-flex justify-between pr-20">
+              <p className="inline-flex justify-between">
                 Skor Kredit :{" "}
                 <span>
                   {" "}
                   <span className="text-accent">98 </span>/100{" "}
                 </span>
               </p>
-              <p className="inline-flex justify-between pr-20">
+              <p className="inline-flex justify-between">
                 Catatan Asuransi : <span> {"-"} </span>
               </p>
             </div>
@@ -192,17 +197,17 @@ export default function Dashboard({ transactions, month }) {
           </div>
         </div>
 
-        <div className="p-6 pt-4 w-full flex flex-col gap-4 justify-between">
+        <div className=" lg:p-6 pt-4 w-full flex flex-col gap-4 justify-between">
           <h2 className="font-bold text-lg lg:text-3xl mb-6 text-teal-500">
-            <p className="pb-6 px-2 text-center border-teal-600">
+            <p className="pt-4 lg:pt-0 lg:pb-6 px-2 text-center border-teal-600">
               My Transactions Recap
             </p>
 
             {/* Bar statistik */}
-            <div className="w-full flex justify-between gap-6 px-0 mx-auto mt-4">
+            <div className="w-full flex flex-col lg:flex-row justify-between gap-4 lg:gap-6 px-2 lg:px-0 mx-auto mt-4 ">
               {/* Bar pemasukan */}
               <div style={{ flex: 1.3 }}>
-                <p className="text-lg font-semibold">
+                <p className="text-base font-medium lg:text-lg lg:font-semibold">
                   Pemasukan tahun ini : Rp{" "}
                   {totalIncomeThisYear.toLocaleString("id-ID")}
                 </p>
@@ -224,7 +229,7 @@ export default function Dashboard({ transactions, month }) {
 
               {/* Bar pengeluaran */}
               <div className="flex-1">
-                <p className="text-lg font-semibold">
+                <p className="text-base font-medium lg:text-lg lg:font-semibold">
                   Pengeluaran : Rp {totalExpense.toLocaleString("id-ID")}
                 </p>
                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden flex">
@@ -241,7 +246,7 @@ export default function Dashboard({ transactions, month }) {
 
               {/* Bar saldo akhir */}
               <div className="flex-1">
-                <p className="text-lg font-semibold">
+                <p className="text-base font-medium lg:text-lg lg:font-semibold">
                   Saldo Akhir : Rp {balance.toLocaleString("id-ID")}
                 </p>
                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden flex">
@@ -257,8 +262,12 @@ export default function Dashboard({ transactions, month }) {
               </div>
             </div>
           </h2>
-          <div className="w-auto chart-container">
-            <Bar data={data} options={options} className="!w-full !h-full" />
+          <div className="lg:w-auto chart-container">
+            <Bar
+              data={data}
+              options={options}
+              className="lg:!w-full h-[200px] lg:!h-full"
+            />
           </div>
         </div>
       </div>

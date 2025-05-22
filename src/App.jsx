@@ -28,6 +28,7 @@ export default function App() {
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [selectedMonths, setSelectedMonths] = useState([]);
   // const [selectedChartMonth, setSelectedChartMonth] = useState(null);
+  // Jawa
 
   const categories = [
     {
@@ -303,15 +304,13 @@ export default function App() {
     );
   };
 
-  const handleSelectAllTransactions = (isChecked) => {
-    if (isChecked) {
-      // Pilih semua transaksi
-      setSelectedTransactions(
-        transactions.map((transaction) => transaction.id)
-      );
+  const handleSelectAllTransactions = (idsOrBool) => {
+    if (Array.isArray(idsOrBool)) {
+      setSelectedTransactions(idsOrBool); // Ganti seluruh selectedTransactions
+    } else if (idsOrBool === true) {
+      setSelectedTransactions(transactions.map((t) => t.id)); // Pilih semua
     } else {
-      // Kosongkan pilihan
-      setSelectedTransactions([]);
+      setSelectedTransactions([]); // Unselect semua
     }
   };
 
@@ -580,6 +579,7 @@ export default function App() {
                 month={month}
                 selectedMonths={selectedMonths}
                 onMonthChange={handleMonthChange}
+                categories={categories}
               />
               <AddModal
                 isOpen={isModalOpen}

@@ -314,7 +314,7 @@ function Chart({ categories, month, transactions }) {
       <div className="h-[2px] mx-32 mt-6 lg:mt-10 bg-slate-300"></div>
 
       {/* Calendar */}
-      <div className="px-26 py-8 w-full">
+      <div className="px-0 lg:px-26 py-2 w-full">
         <Calendar
           transactions={filteredCalendarTransactions}
           currentMonth={mont}

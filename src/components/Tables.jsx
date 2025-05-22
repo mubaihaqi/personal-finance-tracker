@@ -1,4 +1,9 @@
 import Swal from "sweetalert2";
+import { format } from "date-fns";
+import id from "date-fns/locale/id";
+import DotsAnimation from "./animations/DotsAnimation";
+import { useRef, useEffect, useState } from "react";
+
 export default function Tables({
   transactions,
   onRemoveTransaction,
@@ -11,7 +16,32 @@ export default function Tables({
   month,
   selectedMonths,
   onMonthChange,
+  categories,
 }) {
+  const [dropdownOpenId, setDropdownOpenId] = useState(null);
+  const dropdownModalRef = useRef(null);
+
+  const toggleDropdown = (id) => {
+    setDropdownOpenId((prevId) => (prevId === id ? null : id));
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownModalRef.current &&
+        !dropdownModalRef.current.contains(event.target)
+      ) {
+        setDropdownOpenId(null);
+      }
+    }
+    if (dropdownOpenId !== null) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpenId]);
+
   const showAlert = (transactionId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -45,10 +75,42 @@ export default function Tables({
     transactions.length > 0 &&
     selectedTransactions.length === transactions.length;
 
+  function groupTransactions(transactions) {
+    const grouped = {};
+
+    transactions.forEach((tx) => {
+      const date = new Date(tx.date);
+      const monthName = format(date, "MMMM", { locale: id });
+      const day = format(date, "yyyy-MM-dd");
+
+      if (selectedMonths.length > 0 && !selectedMonths.includes(monthName))
+        return;
+
+      if (!grouped[monthName]) grouped[monthName] = {};
+      if (!grouped[monthName][day]) grouped[monthName][day] = [];
+
+      grouped[monthName][day].push(tx);
+    });
+
+    return Object.entries(grouped).map(([month, days]) => ({
+      month,
+      days: Object.entries(days)
+        .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+        .map(([date, transactions]) => ({ date, transactions })),
+    }));
+  }
+
+  const groupedByMonth = groupTransactions(transactions);
+
   return (
     <>
       <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
-        <p>My Transactions</p>
+        <p
+          className="hover:cursor-pointer hover:text-accent"
+          onClick={() => onSelectAllTransactions(!isAllSelected)}
+        >
+          My Transactions
+        </p>
 
         <button
           id="dropdownDefaultButton"
@@ -108,7 +170,8 @@ export default function Tables({
         </div>
       </h2>
 
-      <div className="relative overflow-x-auto sm:rounded-lg lg:mx-auto max-w-7xl mt-8  pb-8 mx-3  ">
+      {/* Table hanya tampil di desktop (lg ke atas) */}
+      <div className="relative overflow-x-auto sm:rounded-lg lg:mx-auto max-w-7xl mt-8 pb-8 mx-3 hidden lg:block">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 shadow-sm shadow-teal-800 rounded-b-xl overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr className="h-10">
@@ -210,6 +273,254 @@ export default function Tables({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* List 1 kolom hanya tampil di mobile/tablet (sm/md) */}
+      <div
+        className="lg:hidden mt-4 mx-4 block gap-x-4 gap-y-10"
+        style={{
+          gridTemplateColumns: `repeat(${groupedByMonth.length}, minmax(0, 1fr))`,
+          gridAutoFlow: "column",
+        }}
+        ref={dropdownModalRef}
+      >
+        {groupedByMonth.map((monthGroup) => {
+          const monthTransactionIds = monthGroup.days.flatMap((dayGroup) =>
+            dayGroup.transactions.map((t) => t.id)
+          );
+          const isMonthAllSelected =
+            monthTransactionIds.length > 0 &&
+            monthTransactionIds.every((id) =>
+              selectedTransactions.includes(id)
+            );
+
+          const handleSelectAllMonth = (isChecked) => {
+            if (isChecked) {
+              const newSelected = Array.from(
+                new Set([...selectedTransactions, ...monthTransactionIds])
+              );
+              onSelectAllTransactions(newSelected);
+            } else {
+              const newSelected = selectedTransactions.filter(
+                (id) => !monthTransactionIds.includes(id)
+              );
+              onSelectAllTransactions(newSelected);
+            }
+          };
+
+          return (
+            <div key={monthGroup.month} className="mb-0 flex flex-col">
+              <div className="flex flex-col items-start px-1">
+                <h3
+                  className="text-xl font-semibold text-white my-8 px-1 pb-2 cursor-pointer select-none hover:cursor-pointer hover:text-slate-300 transition-all duration-500 ease-in-out border-b-2 border-slate-300 w-full text-start"
+                  onClick={() => handleSelectAllMonth(!isMonthAllSelected)}
+                >
+                  {monthGroup.month}
+                </h3>
+              </div>
+              {monthGroup.days.map((dayGroup) => {
+                const dayTransactionIds = dayGroup.transactions.map(
+                  (t) => t.id
+                );
+                const isDayAllSelected =
+                  dayTransactionIds.length > 0 &&
+                  dayTransactionIds.every((id) =>
+                    selectedTransactions.includes(id)
+                  );
+                const handleSelectAllDay = (isChecked) => {
+                  if (isChecked) {
+                    const newSelected = Array.from(
+                      new Set([...selectedTransactions, ...dayTransactionIds])
+                    );
+                    onSelectAllTransactions(newSelected);
+                  } else {
+                    const newSelected = selectedTransactions.filter(
+                      (id) => !dayTransactionIds.includes(id)
+                    );
+                    onSelectAllTransactions(newSelected);
+                  }
+                };
+
+                return (
+                  <div
+                    key={dayGroup.date}
+                    className="bg-slate-800 rounded-lg px-2 py-2 mb-2 shadow-md space-y-4 flex flex-col"
+                  >
+                    {/* Header Hari Custom */}
+                    <div
+                      className={`flex justify-between items-center mb-0 px-4 pt-3 pb-2 cursor-pointer select-none transition-all duration-200 rounded-lg ${
+                        isDayAllSelected ? "" : ""
+                      }`}
+                      onClick={() => handleSelectAllDay(!isDayAllSelected)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`text-4xl font-normal text-teal-500 leading-none transition-all duration-700 ease-in-out ${
+                            isDayAllSelected ? "text-teal-600" : ""
+                          }`}
+                        >
+                          {format(new Date(dayGroup.date), "d", { locale: id })}
+                        </div>
+                        <div className="flex flex-col leading-tight">
+                          <div className="text-md text-teal-600">
+                            {format(new Date(dayGroup.date), "EEEE", {
+                              locale: id,
+                            })}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {format(new Date(dayGroup.date), "MMMM yyyy", {
+                              locale: id,
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-lg font-medium text-teal-500">
+                        Rp{" "}
+                        {dayGroup.transactions
+                          .reduce((sum, t) => {
+                            let amt = t.amount;
+                            if (typeof amt === "string") {
+                              amt = amt
+                                .replace(/[^0-9,-]/g, "")
+                                .replace(/\./g, "")
+                                .replace(",", ".");
+                              amt = amt.trim() === "" ? "0" : amt;
+                              amt = parseFloat(amt);
+                            } else {
+                              amt = Number(amt) || 0;
+                            }
+                            return sum + (isNaN(amt) ? 0 : amt);
+                          }, 0)
+                          .toLocaleString("id-ID")}
+                      </div>
+                    </div>
+
+                    {/* Garis bawah */}
+                    <div
+                      className={`h-[1px] mb-3 mt-1 rounded-full mx-auto transition-all duration-1000 ease-in-out ${
+                        isDayAllSelected
+                          ? "bg-teal-500 w-[90%] animate-pulse"
+                          : "bg-transparent w-[1px]"
+                      }`}
+                    />
+
+                    {/* Card Day */}
+                    {dayGroup.transactions.map((transaction) => {
+                      const isSelected = selectedTransactions.includes(
+                        transaction.id
+                      );
+                      const categoryObj = categories?.find(
+                        (cat) => cat.name === transaction.category
+                      );
+                      const bgColor = categoryObj
+                        ? categoryObj.style
+                        : "#06b6d4";
+
+                      return (
+                        <div
+                          key={transaction.id}
+                          className={`flex items-center gap-3 py-3 pr-1 border bg-slate-800 rounded-lg px-4 cursor-pointer transition duration-700 ${
+                            isSelected
+                              ? "border-teal-500"
+                              : "border-transparent"
+                          }`}
+                          onClick={() => onSelectTransaction(transaction.id)}
+                          tabIndex={0}
+                          role="button"
+                          aria-pressed={isSelected}
+                        >
+                          {/* Icon/Avatar */}
+                          <div
+                            className="w-14 h-14 rounded-xl flex justify-center items-center shrink-0"
+                            style={{ backgroundColor: bgColor }}
+                          >
+                            {transaction.icon ? (
+                              <img
+                                src={transaction.icon}
+                                alt={transaction.name}
+                                className="w-10 h-10"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                <p className="text-gray-500 text-lg font-bold">
+                                  {transaction.name[0].toUpperCase()}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Info transaksi */}
+                          <div className="flex flex-col flex-grow gap-1">
+                            <p className="text-base font-bold text-white">
+                              {transaction.name}
+                            </p>
+                            <p className="text-sm text-gray-300">
+                              {transaction.category}
+                            </p>
+                          </div>
+                          {/* Amount & time */}
+                          <div className="flex flex-col items-end w-auto gap-2">
+                            <p className="text-sm text-teal-400">
+                              Rp{" "}
+                              {Number(
+                                String(transaction.amount).replace(/[^\d]/g, "")
+                              )?.toLocaleString("id-ID")}
+                            </p>
+                            <p className="text-xs text-gray-300 mt-1">
+                              {format(new Date(transaction.date), "HH:mm", {
+                                locale: id,
+                              })}
+                            </p>
+                          </div>
+                          {/* Dropdown menu button */}
+                          <div className="relative">
+                            <button
+                              onClick={() => toggleDropdown(transaction.id)}
+                            >
+                              <div className="h-9 overflow-hidden aspect-square flex items-center justify-center rounded-full hover:bg-slate-700/60 transition-all duration-200 hover:cursor-pointer">
+                                <DotsAnimation />
+                              </div>
+                            </button>
+
+                            {/* Dropdown Modal */}
+                            {dropdownOpenId === transaction.id && (
+                              <div
+                                ref={dropdownModalRef}
+                                className="absolute flex flex-col p-2 -right-3 w-38 -top-9 mt-2 bg-slate-800/90 backdrop-blur-sm text-sm rounded-lg shadow-md z-50 gap-1"
+                              >
+                                <button
+                                  onClick={() =>
+                                    onEditTransaction(transaction.id)
+                                  }
+                                  className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30"
+                                >
+                                  Edit
+                                </button>
+                                <button className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30 w-full">
+                                  Add to Favorite
+                                </button>
+                                <button className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30">
+                                  Add Photo
+                                </button>
+                                <div className="h-[1px] bg-teal-400 rounded-full w-[90%] mx-auto"></div>
+                                <button
+                                  onClick={() => showAlert(transaction.id)}
+                                  className=" text-start ps-2 rounded-md h-auto py-[6px] hover:cursor-pointer hover:bg-teal-600/30"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     </>
   );

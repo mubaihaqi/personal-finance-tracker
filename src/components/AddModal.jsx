@@ -55,11 +55,22 @@ export default function AddModal({
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
-    const formattedDate = date
-      ? new Date(date).toISOString().split("T")[0]
-      : "";
 
-    // Jika income, kategori otomatis "Pemasukan"
+    // Ambil tanggal dari input, jam dari waktu sekarang
+    let finalDate = "";
+    if (date) {
+      const inputDate = new Date(date);
+      const now = new Date();
+      // Set jam, menit, detik dari waktu sekarang ke tanggal input
+      inputDate.setHours(
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds()
+      );
+      finalDate = inputDate.toISOString();
+    }
+
     const finalCategory = type === "income" ? "Pemasukan" : selectedCategory;
 
     const newTransaction = {
@@ -67,7 +78,7 @@ export default function AddModal({
       name,
       category: finalCategory,
       amount: rupiah,
-      date: formattedDate,
+      date: finalDate,
       type,
     };
     onAddTransaction(newTransaction);
@@ -95,21 +106,18 @@ export default function AddModal({
   // Navigasi keyboard untuk dropdown
   const handleDropdownKeyDown = (event) => {
     if (event.key === "ArrowDown") {
-      // Navigasi ke bawah
       setFocusedIndex((prevIndex) =>
         prevIndex < categories.length - 1 ? prevIndex + 1 : 0
       );
     } else if (event.key === "ArrowUp") {
-      // Navigasi ke atas
       setFocusedIndex((prevIndex) =>
         prevIndex > 0 ? prevIndex - 1 : categories.length - 1
       );
     } else if (event.key === "Enter" && isDropdownOpen) {
-      // Pilih item yang difokuskan
       if (focusedIndex >= 0 && focusedIndex < categories.length) {
         setSelectedCategory(categories[focusedIndex].name);
         setIsDropdownOpen(false);
-        setFocusedIndex(-1); // Reset fokus
+        setFocusedIndex(-1);
       }
     }
   };
@@ -137,20 +145,26 @@ export default function AddModal({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen && !editingTransaction) {
+      setDate(new Date());
+    }
+  }, [isOpen, editingTransaction]);
+
   if (!isOpen) return null;
 
   return (
     <div
       tabIndex="-1"
-      className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-50 justify-center !bg-transparent backdrop-blur-xs items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex"
+      className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-50 justify-center !bg-slate-800/75 backdrop-blur-xs items-center w-full md:inset-0 h-[calc(100%)] lg:h-[calc(100%-1rem)] max-h-full flex"
     >
       <div className="relative">
         <form
-          onSubmit={handleSubmit} // Tangani submit form
-          className="bg-slate-950 w-[600px] rounded-lg shadow-sm shadow-teal-800 px-8 pb-6 pt-0 flex flex-col justify-center items-center"
+          onSubmit={handleSubmit}
+          className="bg-slate-950 w-[330px] lg:w-[600px] rounded-xl lg:rounded-lg shadow-sm shadow-teal-800 px-6 lg:px-8 pb-6 pt-0 flex flex-col justify-center items-center"
         >
           {/* Modal header */}
-          <div className="flex items-center justify-between py-4 pt-8 pb-6 border-b-2 rounded-t border-teal-800 mb-4 w-full">
+          <div className="flex items-center justify-between py-4 pt-8 pb-3 lg:pb-6 border-b-2 rounded-t border-teal-800 mb-4 w-full">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               {editingTransaction ? "Edit Transaction" : "Add Transaction"}
             </h3>
@@ -179,7 +193,7 @@ export default function AddModal({
           </div>
 
           {/* Type Transaksi */}
-          <div className="flex gap-4 pb-2 mb-3 w-full">
+          <div className="flex gap-2 lg:gap-4 pb-2 mb-3 w-full">
             {/* Pemasukan */}
             <div className="w-1/2">
               <input
@@ -260,7 +274,11 @@ export default function AddModal({
             <Flatpickr
               value={date}
               onChange={(selectedDates) => setDate(selectedDates[0])}
-              options={{ dateFormat: "Y-m-d", position: "auto right" }}
+              options={{
+                dateFormat: "Y-m-d",
+                enableTime: false,
+                position: "auto right",
+              }}
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-teal-800 peer"
               placeholder=""
               required
@@ -302,9 +320,9 @@ export default function AddModal({
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute left-12 mt-2 w-[500px] divide-y divide-gray-100 rounded-lg !bg-slate-950 shadow-sm shadow-teal-800 dark:divide-gray-600 z-50"
+                  className="absolute left-7 lg:left-12 mt-2 w-10/12 lg:w-[500px] divide-y divide-gray-100 rounded-lg !bg-slate-950 shadow-sm shadow-teal-800 dark:divide-gray-600 z-50"
                 >
-                  <ul className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200 h-[200px] overflow-y-auto ">
+                  <ul className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200 h-[150px] lg:h-[200px] overflow-y-auto ">
                     {categories.map((category, index) => (
                       <li key={category.id}>
                         <button
