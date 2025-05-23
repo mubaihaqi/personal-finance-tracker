@@ -23,7 +23,12 @@ ChartJS.register(
   Legend
 );
 
-export default function Dashboard({ transactions, month }) {
+export default function Dashboard({
+  transactions,
+  month,
+  account,
+  onEditAccount,
+}) {
   // Hitung total pemasukan dan pengeluaran per bulan
   const monthlyIncome = Array(12).fill(0);
   const monthlyExpense = Array(12).fill(0);
@@ -170,15 +175,16 @@ export default function Dashboard({ transactions, month }) {
           <div className="w-full flex flex-col justify-start items-center gap-2">
             <a href="" className="w-full inline-flex justify-center">
               <p className="text-center w-full font-bold lg:font-black text-lg lg:text-xl text-teal-500">
-                Muhammad Umar Baihaqi
+                {account?.name || "-"}
               </p>
             </a>
             <div className="px-1 lg:px-3 w-full text-start gap-1 flex flex-col font-normal lg:font-medium text-sm lg:text-base mb-3">
               <p className="inline-flex justify-between">
-                Pekerjaan : <span>Software Engineer</span>
+                Pekerjaan : <span>{account?.pekerjaan || "-"}</span>
               </p>
               <p className="inline-flex justify-between">
-                Penghasilan : <span>RP 500.000.000 </span>
+                Penghasilan :{" "}
+                <span>Rp {account?.gaji?.toLocaleString("id-ID") || "-"}</span>
               </p>
               <p className="inline-flex justify-between">
                 Skor Kredit :{" "}
@@ -192,7 +198,10 @@ export default function Dashboard({ transactions, month }) {
               </p>
             </div>
             <Link>
-              <button className="btn btn-accent btn-outline mt-1 rounded-lg py-2">
+              <button
+                className="btn btn-accent btn-outline mt-1 rounded-lg py-2"
+                onClick={onEditAccount}
+              >
                 Change Data
               </button>
             </Link>

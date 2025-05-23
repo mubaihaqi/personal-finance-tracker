@@ -1,8 +1,41 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import orangGanteng from "../assets/orang-ganteng.jpg";
-export default function Navbar({ balance }) {
+import TrashIcon from "../assets/icons/TrashIcon.svg";
+import Swal from "sweetalert2";
+
+export default function Navbar({
+  balance,
+  accounts = [],
+  activeAccountId,
+  onSwapAccount,
+  onAddAccountClick,
+  onDeleteAccount,
+}) {
   const [isSwapOpen, setIsSwapOpen] = useState(false);
+  const activeAccount = accounts.find((a) => a.id === activeAccountId);
+
+  // Handler konfirmasi hapus akun
+  const handleDeleteAccount = (id) => {
+    Swal.fire({
+      title: "Yakin mau hapus akun?",
+      text: "Data lu bakal ilang semua lho kalau akunnya lu hapus!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#14b8a6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Hapus bwang",
+      cancelButtonText: "Ntar dlu",
+      background: "#1e293b",
+      color: "#f0f0f0",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        onDeleteAccount(id);
+        Swal.fire("Terhapus!", "Akun berhasil dihapus.", "success");
+      }
+    });
+  };
+
   return (
     <>
       <div className="navbar bg-base-100 shadow-sm shadow-teal-800">
@@ -22,7 +55,7 @@ export default function Navbar({ balance }) {
             {/* Saldo saat ini */}
             <div className="flex flex-col lg:gap-0 items-end justify-center rounded-lg border-l border-transparent hover:bg-clip-border hover:bg-gradient-to-r hover:from-teal-600/30 hover:via-teal-600/10 hover:to-transparent px-3 pb-1 hover:cursor-pointer hover:border-teal-500/50 group transition-all duration-500 ease-in-out">
               <p className="font-semibold text-xs lg:text-sm text-teal-500 group-hover:text-teal-600 transition-all duration-500 ease-in-out">
-                Guweh Sekali
+                {activeAccount?.name || "Guweh Sekali"}
               </p>
               <p className="font-medium text-xs group-hover:text-gray-400 transition-all duration-500 ease-in-out">
                 Rp {(balance ?? 0).toLocaleString("id-ID")}
@@ -89,15 +122,60 @@ export default function Navbar({ balance }) {
 
                 {/* Dropdown content untuk Swap Account */}
                 {isSwapOpen && (
-                  <ul className="pl-4 py-2">
+                  <ul className="pl-4 py-2 flex flex-col gap-2 w-[150%]">
+                    {accounts.map((acc) => (
+                      <li
+                        key={acc.id}
+                        className="inline-flex justify-between items-start"
+                      >
+                        <button
+                          className={`text-xs py-1 text-left flex-1 ${
+                            acc.id === activeAccountId
+                              ? "font-bold text-teal-500"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            setIsSwapOpen(false);
+                            onSwapAccount(acc.id);
+                          }}
+                        >
+                          {acc.name}
+                        </button>
+                        {/* Tombol hapus akun */}
+                        <button
+                          className="ml-2 p-1 flex-1 rounded bg-red-500 hover:bg-red-600"
+                          title="Hapus akun"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAccount(acc.id);
+                          }}
+                          disabled={accounts.length <= 1}
+                          style={
+                            accounts.length <= 1
+                              ? { opacity: 0.5, cursor: "not-allowed" }
+                              : {}
+                          }
+                        >
+                          <img
+                            src={TrashIcon}
+                            alt="Hapus"
+                            className="w-4 h-4"
+                          />
+                        </button>
+                      </li>
+                    ))}
                     <li>
-                      <button className="text-xs py-1 w-full text-left">
-                        Account 1
-                      </button>
-                    </li>
-                    <li>
-                      <button className="text-xs py-1 w-full text-left">
-                        Account 2
+                      <button
+                        className="text-xs py-1 w-full text-left"
+                        onClick={onAddAccountClick}
+                        disabled={accounts.length >= 5}
+                        style={
+                          accounts.length >= 5
+                            ? { opacity: 0.5, cursor: "not-allowed" }
+                            : {}
+                        }
+                      >
+                        Add Account
                       </button>
                     </li>
                   </ul>

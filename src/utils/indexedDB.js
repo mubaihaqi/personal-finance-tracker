@@ -1,8 +1,9 @@
 import { openDB } from "idb";
 
 const DB_NAME = "PersonalFinanceTracker";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = "transactions";
+const ACCOUNT_STORE = "accounts";
 
 export async function initDB() {
   return openDB(DB_NAME, DB_VERSION, {
@@ -10,10 +11,35 @@ export async function initDB() {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: "id" });
       }
+      if (!db.objectStoreNames.contains(ACCOUNT_STORE)) {
+        db.createObjectStore(ACCOUNT_STORE, { keyPath: "id" });
+      }
     },
   });
 }
 
+// Account CRUD
+export async function getAccounts() {
+  const db = await initDB();
+  return db.getAll(ACCOUNT_STORE);
+}
+
+export async function addAccount(account) {
+  const db = await initDB();
+  return db.add(ACCOUNT_STORE, account);
+}
+
+export async function updateAccount(account) {
+  const db = await initDB();
+  return db.put(ACCOUNT_STORE, account);
+}
+
+export async function deleteAccount(id) {
+  const db = await initDB();
+  return db.delete(ACCOUNT_STORE, id);
+}
+
+// Transaction CRUD
 export async function addTransaction(transaction) {
   const db = await initDB();
   return db.add(STORE_NAME, transaction);
@@ -67,4 +93,10 @@ export async function importCSVToTransactions(file) {
   }
 
   return tx.done;
+}
+
+export async function getTransactionsByAccount(accountId) {
+  const db = await initDB();
+  const all = await db.getAll(STORE_NAME);
+  return all.filter((t) => t.account_id === accountId);
 }

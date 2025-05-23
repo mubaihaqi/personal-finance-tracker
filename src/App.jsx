@@ -7,6 +7,7 @@ import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
 import Chart from "./Chart";
 import Dashboard from "./Dashboard";
+import EditAccountModal from "./components/EditAccountModal";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import {
@@ -16,6 +17,11 @@ import {
   updateTransaction,
   exportTransactionsToCSV,
   importCSVToTransactions,
+  getAccounts,
+  addAccount,
+  updateAccount,
+  getTransactionsByAccount,
+  deleteAccount,
 } from "./utils/indexedDB";
 
 export default function App() {
@@ -27,8 +33,10 @@ export default function App() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [selectedMonths, setSelectedMonths] = useState([]);
-  // const [selectedChartMonth, setSelectedChartMonth] = useState(null);
-  // Jawa
+  const [accounts, setAccounts] = useState([]);
+  const [activeAccountId, setActiveAccountId] = useState(null);
+  const [isEditAccountOpen, setIsEditAccountOpen] = useState(false);
+  const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
 
   const categories = [
     {
@@ -186,6 +194,49 @@ export default function App() {
     fetchTransactions();
   }, []);
 
+  useEffect(() => {
+    async function initAccounts() {
+      let accs = await getAccounts();
+      if (accs.length < 2) {
+        const defaultAccounts = [
+          {
+            id: 1,
+            name: "Muhammad Umar Baihaqi",
+            pekerjaan: "Software Engineer",
+            gaji: 5000000,
+          },
+          {
+            id: 2,
+            name: "Kezia Amara",
+            pekerjaan: "Digital Artist",
+            gaji: 4000000,
+          },
+        ];
+        await addAccount(defaultAccounts[0]);
+        await addAccount(defaultAccounts[1]);
+        accs = defaultAccounts;
+      }
+      setAccounts(accs);
+      setActiveAccountId(accs[0].id);
+    }
+    initAccounts();
+  }, []);
+
+  // Fetch transactions sesuai akun aktif
+  useEffect(() => {
+    async function fetchTransactions() {
+      if (!activeAccountId) return;
+      const storedTransactions = await getTransactionsByAccount(
+        activeAccountId
+      );
+      const sortedTransactions = storedTransactions.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setTransactions(sortedTransactions);
+    }
+    fetchTransactions();
+  }, [activeAccountId]);
+
   const handleAddTransaction = async (transaction) => {
     if (editingTransaction) {
       const updatedTransaction = { ...transaction, id: editingTransaction.id };
@@ -199,7 +250,11 @@ export default function App() {
       );
       setEditingTransaction(null);
     } else {
-      const newTransaction = { ...transaction, id: Date.now() };
+      const newTransaction = {
+        ...transaction,
+        id: Date.now(),
+        account_id: activeAccountId,
+      };
       await addTransaction(newTransaction); // Tambahkan ke IndexedDB
       const updatedTransactions = [...transactions, newTransaction];
       // Sortir data setelah menambahkan
@@ -608,9 +663,51 @@ export default function App() {
     );
   };
 
+  // Handler swap account
+  const handleSwapAccount = (id) => {
+    setActiveAccountId(id);
+  };
+
+  const activeAccount = accounts.find((a) => a.id === activeAccountId);
+
+  const handleSaveAccount = async (updatedAccount) => {
+    await updateAccount(updatedAccount);
+    const accs = await getAccounts();
+    setAccounts(accs);
+    setIsEditAccountOpen(false);
+  };
+
+  const handleAddAccount = async (newAccount) => {
+    if (accounts.length >= 5) return;
+    const accountToAdd = { ...newAccount, id: Date.now() };
+    await addAccount(accountToAdd);
+    const accs = await getAccounts();
+    setAccounts(accs);
+    setActiveAccountId(accountToAdd.id);
+    setIsAddAccountOpen(false);
+  };
+
+  const handleDeleteAccount = async (id) => {
+    if (accounts.length <= 1) return;
+    await deleteAccount(id);
+    const accs = await getAccounts();
+    setAccounts(accs);
+
+    if (activeAccountId === id && accs.length > 0) {
+      setActiveAccountId(accs[0].id);
+    }
+  };
+
   return (
     <Router>
-      <Navbar balance={getBalance()} />
+      <Navbar
+        balance={getBalance()}
+        accounts={accounts}
+        activeAccountId={activeAccountId}
+        onSwapAccount={handleSwapAccount}
+        onAddAccountClick={() => setIsAddAccountOpen(true)}
+        onDeleteAccount={handleDeleteAccount} // Tambahkan ini
+      />
       <Routes>
         <Route
           path="/"
@@ -656,7 +753,22 @@ export default function App() {
         />
         <Route
           path="/dashboard"
-          element={<Dashboard transactions={transactions} month={month} />}
+          element={
+            <>
+              <Dashboard
+                transactions={transactions}
+                month={month}
+                account={activeAccount}
+                onEditAccount={() => setIsEditAccountOpen(true)}
+              />
+              <EditAccountModal
+                isOpen={isEditAccountOpen}
+                account={activeAccount}
+                onSave={handleSaveAccount}
+                onClose={() => setIsEditAccountOpen(false)}
+              />
+            </>
+          }
         />
         <Route
           path="/mychart"
@@ -670,6 +782,12 @@ export default function App() {
           }
         />
       </Routes>
+      <EditAccountModal
+        isOpen={isAddAccountOpen}
+        account={null}
+        onSave={handleAddAccount}
+        onClose={() => setIsAddAccountOpen(false)}
+      />
     </Router>
   );
 }
