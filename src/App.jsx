@@ -197,19 +197,13 @@ export default function App() {
   useEffect(() => {
     async function initAccounts() {
       let accs = await getAccounts();
-      if (accs.length < 2) {
+      if (accs.length < 1) {
         const defaultAccounts = [
           {
             id: 1,
-            name: "Muhammad Umar Baihaqi",
-            pekerjaan: "Software Engineer",
-            gaji: 5000000,
-          },
-          {
-            id: 2,
-            name: "Kezia Amara",
-            pekerjaan: "Digital Artist",
-            gaji: 4000000,
+            name: "Main Account",
+            pekerjaan: "",
+            gaji: 0,
           },
         ];
         await addAccount(defaultAccounts[0]);
@@ -239,12 +233,20 @@ export default function App() {
 
   const handleAddTransaction = async (transaction) => {
     if (editingTransaction) {
-      const updatedTransaction = { ...transaction, id: editingTransaction.id };
-      await updateTransaction(updatedTransaction); // Update di IndexedDB
+      // Jika photo tidak diisi di form, gunakan photo lama
+      const updatedTransaction = {
+        ...editingTransaction,
+        ...transaction,
+        id: editingTransaction.id,
+        photo:
+          typeof transaction.photo !== "undefined"
+            ? transaction.photo
+            : editingTransaction.photo,
+      };
+      await updateTransaction(updatedTransaction);
       const updatedTransactions = transactions.map((t) =>
         t.id === editingTransaction.id ? updatedTransaction : t
       );
-      // Sortir data setelah update
       setTransactions(
         updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
       );
@@ -255,9 +257,9 @@ export default function App() {
         id: Date.now(),
         account_id: activeAccountId,
       };
-      await addTransaction(newTransaction); // Tambahkan ke IndexedDB
+      await addTransaction(newTransaction);
       const updatedTransactions = [...transactions, newTransaction];
-      // Sortir data setelah menambahkan
+
       setTransactions(
         updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
       );
@@ -266,7 +268,7 @@ export default function App() {
   };
 
   const handleRemoveTransaction = async (id) => {
-    await deleteTransaction(id); // Hapus dari IndexedDB
+    await deleteTransaction(id);
     const updatedTransactions = transactions.filter(
       (transaction) => transaction.id !== id
     );
@@ -274,7 +276,6 @@ export default function App() {
       updatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     );
 
-    // Hapus backup di localStorage kalau sudah tidak ada data
     if (updatedTransactions.length === 0) {
       localStorage.removeItem("transactions_autobackup");
     }
@@ -294,13 +295,12 @@ export default function App() {
 
   const handleCategoryChange = (categoryName) => {
     if (categoryName === "all") {
-      setSelectedCategories([]); // Kosongkan array untuk menampilkan semua data
+      setSelectedCategories([]);
     } else {
-      setSelectedCategories(
-        (prevSelected) =>
-          prevSelected.includes(categoryName)
-            ? prevSelected.filter((name) => name !== categoryName) // Hapus kategori kalau sudah dipilih
-            : [...prevSelected, categoryName] // Tambahkan kategori kalau belum dipilih
+      setSelectedCategories((prevSelected) =>
+        prevSelected.includes(categoryName)
+          ? prevSelected.filter((name) => name !== categoryName)
+          : [...prevSelected, categoryName]
       );
     }
   };
@@ -335,37 +335,36 @@ export default function App() {
   };
 
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    if (!sortConfig.key) return 0; // kalau tidak ada kolom yang disortir
+    if (!sortConfig.key) return 0;
     const { key, direction } = sortConfig;
 
     let comparison = 0;
     if (key === "name" || key === "category") {
-      comparison = a[key].localeCompare(b[key]); // Sortir string
+      comparison = a[key].localeCompare(b[key]);
     } else if (key === "amount") {
-      comparison = parseFloat(a[key]) - parseFloat(b[key]); // Sortir angka
+      comparison = parseFloat(a[key]) - parseFloat(b[key]);
     } else if (key === "date") {
-      comparison = new Date(a[key]) - new Date(b[key]); // Sortir tanggal
+      comparison = new Date(a[key]) - new Date(b[key]);
     }
 
     return direction === "asc" ? comparison : -comparison;
   });
 
   const handleSelectTransaction = (id) => {
-    setSelectedTransactions(
-      (prevSelected) =>
-        prevSelected.includes(id)
-          ? prevSelected.filter((transactionId) => transactionId !== id) // Hapus kalau sudah dipilih
-          : [...prevSelected, id] // Tambahkan kalau belum dipilih
+    setSelectedTransactions((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((transactionId) => transactionId !== id)
+        : [...prevSelected, id]
     );
   };
 
   const handleSelectAllTransactions = (idsOrBool) => {
     if (Array.isArray(idsOrBool)) {
-      setSelectedTransactions(idsOrBool); // Ganti seluruh selectedTransactions
+      setSelectedTransactions(idsOrBool);
     } else if (idsOrBool === true) {
-      setSelectedTransactions(transactions.map((t) => t.id)); // Pilih semua
+      setSelectedTransactions(transactions.map((t) => t.id));
     } else {
-      setSelectedTransactions([]); // Unselect semua
+      setSelectedTransactions([]);
     }
   };
 
@@ -760,6 +759,7 @@ export default function App() {
                 month={month}
                 account={activeAccount}
                 onEditAccount={() => setIsEditAccountOpen(true)}
+                onRemoveFavorite={handleToggleFavorite}
               />
               <EditAccountModal
                 isOpen={isEditAccountOpen}

@@ -10,7 +10,6 @@ import {
   PointElement,
   LineElement,
 } from "chart.js";
-import orangGanteng from "./assets/orang-ganteng.jpg";
 import FavoriteTransactions from "./components/FavoriteTransactions";
 
 ChartJS.register(
@@ -28,6 +27,7 @@ export default function Dashboard({
   month,
   account,
   onEditAccount,
+  onRemoveFavorite,
 }) {
   // Hitung total pemasukan dan pengeluaran per bulan
   const monthlyIncome = Array(12).fill(0);
@@ -164,18 +164,26 @@ export default function Dashboard({
 
       <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
         <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
-          <div className="w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out">
-            <img alt="Profile" src={orangGanteng} className="object-top" />
-            {/* <img
-              alt="Profile"
-              src="https://picsum.photos/720"
-              className="object-top"
-            /> */}
+          <div
+            className={`w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out  ${
+              account?.photo
+                ? "bg-gradient-to-t from-teal-600/30 via-teal-600/10 to-transparent"
+                : "bg-gradient-to-tr from-emerald-500 via-teal-500 to-lime-500"
+            }`}
+          >
+            {/* <img alt="Profile" src={orangGanteng} className="object-top" /> */}
+            {account?.photo ? (
+              <img
+                alt="Profile"
+                src={account.photo}
+                className="object-cover w-full h-full"
+              />
+            ) : null}
           </div>
           <div className="w-full flex flex-col justify-start items-center gap-2">
             <a href="" className="w-full inline-flex justify-center">
               <p className="text-center w-full font-bold lg:font-black text-lg lg:text-xl text-teal-500">
-                {account?.name || "-"}
+                {account?.name || "Outlander"}
               </p>
             </a>
             <div className="px-1 lg:px-3 w-full text-start gap-1 flex flex-col font-normal lg:font-medium text-sm lg:text-base mb-3">
@@ -273,11 +281,11 @@ export default function Dashboard({
               </div>
             </div>
           </h2>
-          <div className="lg:w-auto chart-container">
+          <div className="lg:w-auto">
             <Bar
               data={data}
               options={options}
-              className="lg:!w-full h-[200px] lg:!h-full"
+              className="lg:!w-full lg:!h-full"
             />
           </div>
         </div>
@@ -285,10 +293,11 @@ export default function Dashboard({
       <h2 className="font-bold text-md lg:text-2xl mx-3 lg:mx-32 px-4 mt-2 lg:mt-4 border-b-2 pb-2 lg:pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
         <p>My Favorite Transactions</p>
       </h2>
-      <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
-        <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
-          <FavoriteTransactions transactions={transactions} />
-        </div>
+      <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between mt-6 lg:mt-12 mx-3">
+        <FavoriteTransactions
+          transactions={transactions}
+          onRemoveFavorite={onRemoveFavorite}
+        />
       </div>
     </>
   );

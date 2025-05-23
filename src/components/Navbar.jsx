@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import orangGanteng from "../assets/orang-ganteng.jpg";
 import TrashIcon from "../assets/icons/TrashIcon.svg";
 import Swal from "sweetalert2";
 
@@ -31,7 +30,17 @@ export default function Navbar({
     }).then((result) => {
       if (result.isConfirmed) {
         onDeleteAccount(id);
-        Swal.fire("Terhapus!", "Akun berhasil dihapus.", "success");
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Akun berhasil dihapus.",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#1e293b",
+          color: "#f0f0f0",
+        });
       }
     });
   };
@@ -55,7 +64,7 @@ export default function Navbar({
             {/* Saldo saat ini */}
             <div className="flex flex-col lg:gap-0 items-end justify-center rounded-lg border-l border-transparent hover:bg-clip-border hover:bg-gradient-to-r hover:from-teal-600/30 hover:via-teal-600/10 hover:to-transparent px-3 pb-1 hover:cursor-pointer hover:border-teal-500/50 group transition-all duration-500 ease-in-out">
               <p className="font-semibold text-xs lg:text-sm text-teal-500 group-hover:text-teal-600 transition-all duration-500 ease-in-out">
-                {activeAccount?.name || "Guweh Sekali"}
+                {activeAccount?.name || "Outlander"}
               </p>
               <p className="font-medium text-xs group-hover:text-gray-400 transition-all duration-500 ease-in-out">
                 Rp {(balance ?? 0).toLocaleString("id-ID")}
@@ -68,17 +77,29 @@ export default function Navbar({
               role="button"
               className="btn btn-ghost btn-circle avatar"
             >
-              <div className="w-24 aspect-[1/1] rounded-full border-2 border-teal-600">
-                <img alt="Profile" src={orangGanteng} className="object-top" />
+              <div
+                className={`w-24 aspect-[1/1] rounded-full border-2 border-teal-600 overflow-hidden bg-gradient-to-tr from-emerald-500 via-teal-500 to-lime-500 flex items-center justify-center ${
+                  activeAccount?.photo
+                    ? "bg-gradient-to-t from-teal-600/30 via-teal-600/10 to-transparent"
+                    : "bg-gradient-to-tr from-emerald-500 via-teal-500 to-lime-500"
+                }`}
+              >
+                {activeAccount?.photo ? (
+                  <img
+                    alt="Profile"
+                    src={activeAccount.photo}
+                    className="object-cover w-full h-full"
+                  />
+                ) : null}
               </div>
             </div>
 
             {/* Dropdown user navigation */}
-            <ul className="menu menu-sm absolute top-10 dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <ul className="menu menu-sm dropdown-content absolute top-10 -right-3 bg-base-100 rounded-box z-1 mt-3 w-84 p-2 shadow">
               <li>
                 <Link
                   to="/dashboard"
-                  className="justify-between font-semibold text-sm"
+                  className="justify-between font-semibold text-base py-2 mb-1"
                 >
                   Profile
                 </Link>
@@ -86,18 +107,18 @@ export default function Navbar({
               <li>
                 <Link
                   to="/mychart"
-                  className="justify-between font-semibold text-sm"
+                  className="justify-between font-semibold text-base py-2"
                 >
                   My Chart
                 </Link>
               </li>
-              <div className="h-[2px] w-full px-2 my-1 rounded-full bg-teal-500"></div>
+              <div className="h-[2px] w-[95%] mx-auto px-2 mt-2 mb-3 rounded-full bg-teal-500/80"></div>
 
               {/* Swap Account */}
               <li>
                 <button
                   type="button"
-                  className="font-semibold text-sm py-2 flex items-center w-full justify-between pr-4"
+                  className="font-semibold text-base py-2 flex items-center w-full justify-between pr-4"
                   onClick={() => setIsSwapOpen((prev) => !prev)}
                 >
                   Swap Account
@@ -122,52 +143,58 @@ export default function Navbar({
 
                 {/* Dropdown content untuk Swap Account */}
                 {isSwapOpen && (
-                  <ul className="pl-4 py-2 flex flex-col gap-2 w-[150%]">
+                  <ul className="pl-4 py-2 flex flex-col gap-2 w-[90%]">
                     {accounts.map((acc) => (
                       <li
                         key={acc.id}
-                        className="inline-flex justify-between items-start"
+                        className="inline-flex items-start gap-2"
                       >
-                        <button
-                          className={`text-xs py-1 text-left flex-1 ${
-                            acc.id === activeAccountId
-                              ? "font-bold text-teal-500"
-                              : ""
-                          }`}
-                          onClick={() => {
-                            setIsSwapOpen(false);
-                            onSwapAccount(acc.id);
-                          }}
-                        >
-                          {acc.name}
-                        </button>
-                        {/* Tombol hapus akun */}
-                        <button
-                          className="ml-2 p-1 flex-1 rounded bg-red-500 hover:bg-red-600"
-                          title="Hapus akun"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteAccount(acc.id);
-                          }}
-                          disabled={accounts.length <= 1}
-                          style={
-                            accounts.length <= 1
-                              ? { opacity: 0.5, cursor: "not-allowed" }
-                              : {}
-                          }
-                        >
-                          <img
-                            src={TrashIcon}
-                            alt="Hapus"
-                            className="w-4 h-4"
-                          />
-                        </button>
+                        <div className="w-full justify-between flex items-center">
+                          {/* Nama akun */}
+                          <button
+                            className={`text-base py-1 text-left ${
+                              acc.id === activeAccountId
+                                ? "font-bold text-teal-500"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setIsSwapOpen(false);
+                              onSwapAccount(acc.id);
+                            }}
+                          >
+                            {acc.name}
+                          </button>
+                          {/* Tombol hapus akun */}
+                          <button
+                            className="px-1 aspect-square btn btn-sm btn-error rounded w-auto mr-2"
+                            title="Hapus akun"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAccount(acc.id);
+                            }}
+                            disabled={accounts.length <= 1}
+                            style={
+                              accounts.length <= 1
+                                ? { opacity: 0.5, cursor: "not-allowed" }
+                                : {}
+                            }
+                          >
+                            <img
+                              src={TrashIcon}
+                              alt="Hapus"
+                              className="w-4 aspect-square"
+                            />
+                          </button>
+                        </div>
                       </li>
                     ))}
                     <li>
                       <button
-                        className="text-xs py-1 w-full text-left"
-                        onClick={onAddAccountClick}
+                        className="text-base h-10 py-[10px] w-full text-left"
+                        onClick={() => {
+                          setIsSwapOpen(false);
+                          onAddAccountClick();
+                        }}
                         disabled={accounts.length >= 5}
                         style={
                           accounts.length >= 5

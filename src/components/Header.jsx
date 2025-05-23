@@ -21,8 +21,12 @@ export default function Header({
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: "Deleted!",
-          text: "Your transaction has been deleted.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          text: "Dah kehapus dah",
           icon: "success",
           background: "#1e293b",
           color: "#f0f0f0",

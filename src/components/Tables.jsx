@@ -63,8 +63,12 @@ export default function Tables({
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: "Deleted!",
-          text: "Your transaction has been deleted.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          text: "Dah kehapus dah",
           icon: "success",
           background: "#1e293b",
           color: "#f0f0f0",
@@ -131,6 +135,17 @@ export default function Tables({
       color: "#f0f0f0",
     });
     if (result.isConfirmed) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        text: "Dah kehapus dah",
+        icon: "success",
+        background: "#1e293b",
+        color: "#f0f0f0",
+      });
       await onAddPhoto(transaction.id, null);
       setPreviewPhoto(null);
     }
@@ -148,6 +163,17 @@ export default function Tables({
       color: "#f0f0f0",
     });
     if (result.isConfirmed) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        text: "Dah kehapus dah",
+        icon: "success",
+        background: "#1e293b",
+        color: "#f0f0f0",
+      });
       await onAddPhoto(transactionId, null);
     }
   };
@@ -502,7 +528,8 @@ export default function Tables({
                             } else {
                               amt = Number(amt) || 0;
                             }
-                            return sum + (isNaN(amt) ? 0 : amt);
+                            // income +, expense -
+                            return sum + (t.type === "income" ? amt : -amt);
                           }, 0)
                           .toLocaleString("id-ID")}
                       </div>
