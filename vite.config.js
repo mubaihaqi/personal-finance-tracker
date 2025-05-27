@@ -6,6 +6,7 @@ import svgr from "vite-plugin-svgr";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), svgr()],
+  base: import.meta.env.VITE_BASE_PATH || "/personal-finance-tracker",
   server: {
     host: "0.0.0.0",
     port: 3000,
