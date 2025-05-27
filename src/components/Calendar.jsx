@@ -11,12 +11,20 @@ export default function Calendar({
   currentYear,
 }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 640);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const checkCompact = () => setIsCompact(window.innerWidth < 1024); // <lg
+    checkCompact();
+    window.addEventListener("resize", checkCompact);
+    return () => window.removeEventListener("resize", checkCompact);
   }, []);
 
   const events = transactions.map((trx) => ({
@@ -34,7 +42,7 @@ export default function Calendar({
 
   // --- Perbaikan: renderEventContent akses isMobile dari state ---
   function renderEventContent(eventInfo) {
-    if (isMobile) {
+    if (isCompact) {
       return (
         <div
           style={{
@@ -91,7 +99,7 @@ export default function Calendar({
 
   return (
     <div className="p-6 pt-4 rounded-xl">
-      <h2 className="text-2xl ps-5 font-bold mb-6 text-teal-500 flex items-center gap-2">
+      <h2 className="text-xl lg:text-2xl ps-5 font-bold mb-6 text-teal-500 flex items-center gap-2">
         <CalendarAnimation />
         Financial Calendar
       </h2>
@@ -116,6 +124,8 @@ export default function Calendar({
               background: "#1e293b",
               color: "#f0f0f0",
               showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
             });
             return;
           }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TrashIcon from "../assets/icons/TrashIcon.svg";
 import Swal from "sweetalert2";
@@ -12,6 +12,21 @@ export default function Navbar({
   onDeleteAccount,
 }) {
   const [isSwapOpen, setIsSwapOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown jika klik di luar
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+        setIsSwapOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const activeAccount = accounts.find((a) => a.id === activeAccountId);
 
   // Handler konfirmasi hapus akun
@@ -76,6 +91,7 @@ export default function Navbar({
               tabIndex={0}
               role="button"
               className="btn btn-ghost btn-circle avatar"
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               <div
                 className={`w-24 aspect-[1/1] rounded-full border-2 border-teal-600 overflow-hidden bg-gradient-to-tr from-emerald-500 via-teal-500 to-lime-500 flex items-center justify-center ${
@@ -95,7 +111,12 @@ export default function Navbar({
             </div>
 
             {/* Dropdown user navigation */}
-            <ul className="menu menu-sm dropdown-content absolute top-10 -right-3 bg-base-100 rounded-box z-1 mt-3 w-84 p-2 shadow">
+            <ul
+              ref={dropdownRef}
+              className={`menu menu-sm dropdown-content absolute top-10 -right-3 bg-base-100 rounded-box z-1 mt-3 w-84 p-2 shadow transition-all duration-200 ${
+                isDropdownOpen ? "block" : "hidden"
+              }`}
+            >
               <li>
                 <Link
                   to="/dashboard"
@@ -143,11 +164,11 @@ export default function Navbar({
 
                 {/* Dropdown content untuk Swap Account */}
                 {isSwapOpen && (
-                  <ul className="pl-4 py-2 flex flex-col gap-2 w-[90%]">
+                  <ul className="pl-4 py-2 flex flex-col gap-1 w-[90%]">
                     {accounts.map((acc) => (
                       <li
                         key={acc.id}
-                        className="inline-flex items-start gap-2"
+                        className="inline-flex items-start gap-1"
                       >
                         <div className="w-full justify-between flex items-center">
                           {/* Nama akun */}

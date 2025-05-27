@@ -13,4 +13,25 @@ export default defineConfig({
   preview: {
     port: 3001,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react") || id.includes("react-dom")) {
+              return "react-vendor";
+            }
+            if (id.includes("flowbite")) {
+              return "flowbite-vendor";
+            }
+            if (id.includes("lottie-web")) {
+              return "lottie-vendor";
+            }
+            return "vendor";
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1500, // untuk hilangin warning chunk > 500kb
+  },
 });

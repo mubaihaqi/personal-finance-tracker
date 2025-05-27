@@ -774,8 +774,7 @@ export default function App() {
           path="/mychart"
           element={
             <Chart
-              categories={getCategoryData()}
-              totalAmount={getTotalAmount()}
+              categories={categories}
               month={month}
               transactions={transactions}
             />

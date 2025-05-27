@@ -6,7 +6,7 @@ const ArrowAnimation = () => {
     <div className="aspect-auto w-12" id="lottiestart">
       <Lottie
         animationData={Calendar}
-        loop={true}
+        loop={false}
         autoplay={true}
         className="aspect-square"
       />

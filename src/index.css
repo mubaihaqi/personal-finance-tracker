@@ -3,3 +3,6 @@
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
+@plugin "daisyui" {
+  themes: light --caramellatte, dark --dim;
+}

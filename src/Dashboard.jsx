@@ -163,9 +163,9 @@ export default function Dashboard({
       </h2>
 
       <div className="flex flex-col lg:flex-row items-start lg:justify-between mt-6 lg:mt-12 mx-6 lg:mx-32">
-        <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center">
+        <div className="w-full lg:w-auto px-8 lg:px-6 py-6 rounded-lg border-2 border-teal-500/10 hover:border-teal-500 hover:bg-slate-100/5 hover:shadow-accent hover:shadow-sm flex flex-col transition-all duration-100 ease-in-out hover:cursor-pointer group mr-6 items-center md:flex-row lg:flex-col">
           <div
-            className={`w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out  ${
+            className={`w-9/10 lg:w-80 aspect-[1/1] mb-6 rounded-full border-5 group-hover:border-4 border-dotted group-hover:border-solid border-teal-600 shadow-sm shadow-teal-500 group-hover:shadow-lg overflow-hidden transition-all duration-1000 ease-in-out md:flex-1 ${
               account?.photo
                 ? "bg-gradient-to-t from-teal-600/30 via-teal-600/10 to-transparent"
                 : "bg-gradient-to-tr from-emerald-500 via-teal-500 to-lime-500"
@@ -180,13 +180,13 @@ export default function Dashboard({
               />
             ) : null}
           </div>
-          <div className="w-full flex flex-col justify-start items-center gap-2">
+          <div className="w-full flex flex-col justify-start items-center gap-2 md:flex-1 md:pl-6 lg:pl-0 md:">
             <a href="" className="w-full inline-flex justify-center">
-              <p className="text-center w-full font-bold lg:font-black text-lg lg:text-xl text-teal-500">
+              <p className="text-center w-full font-bold lg:font-black text-lg lg:text-xl text-teal-500 md:mb-6 lg:mb-0">
                 {account?.name || "Outlander"}
               </p>
             </a>
-            <div className="px-1 lg:px-3 w-full text-start gap-1 flex flex-col font-normal lg:font-medium text-sm lg:text-base mb-3">
+            <div className="px-1 lg:px-3 w-full md:w-[80%] lg:w-full text-start gap-1 md:gap-3 lg:gap-1 flex flex-col font-normal md:font-medium text-sm lg:text-base mb-3">
               <p className="inline-flex justify-between">
                 Pekerjaan : <span>{account?.pekerjaan || "-"}</span>
               </p>
@@ -207,7 +207,7 @@ export default function Dashboard({
             </div>
             <Link>
               <button
-                className="btn btn-accent btn-outline mt-1 rounded-lg py-2"
+                className="btn btn-accent btn-outline mt-1 md:mt-6 lg:mt-1 rounded-lg py-2"
                 onClick={onEditAccount}
               >
                 Change Data
@@ -218,7 +218,7 @@ export default function Dashboard({
 
         <div className=" lg:p-6 pt-4 w-full flex flex-col gap-4 justify-between">
           <h2 className="font-bold text-lg lg:text-3xl mb-6 text-teal-500">
-            <p className="pt-4 lg:pt-0 lg:pb-6 px-2 text-center border-teal-600">
+            <p className="pt-4 lg:pt-0 lg:pb-6 px-2 text-center w-auto md:mx-auto text-xl pb-5">
               My Transactions Recap
             </p>
 
@@ -290,10 +290,10 @@ export default function Dashboard({
           </div>
         </div>
       </div>
-      <h2 className="font-bold text-md lg:text-2xl mx-3 lg:mx-32 px-4 mt-2 lg:mt-4 border-b-2 pb-2 lg:pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
-        <p>My Favorite Transactions</p>
+      <h2 className="font-bold md:text-xl md:mt-8 lg:text-2xl px-4 mt-6 lg:mt-8 pb-2 mx-auto lg:w-auto lg:pb-4 text-teal-500 text-center text-lg lg:text-start flex justify-between items-center">
+        <p className="w-auto mx-auto">My Favorite Transactions</p>
       </h2>
-      <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between mt-6 lg:mt-12 mx-3">
+      <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between mt-2 md:mt-3 lg:mt-6 mx-3">
         <FavoriteTransactions
           transactions={transactions}
           onRemoveFavorite={onRemoveFavorite}

@@ -180,7 +180,7 @@ export default function Tables({
 
   return (
     <>
-      <h2 className="font-bold text-lg mx-3 lg:mx-32 px-4 mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
+      <h2 className="font-bold text-lg mx-auto lg:mx-32 px-2 md:px-1 w-[92%] md:w-[96%] lg:w-auto md:mx-auto lg:px-4 mt-8 md:mt-6 lg:mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
         <p
           className="hover:cursor-pointer hover:text-accent"
           onClick={() => onSelectAllTransactions(!isAllSelected)}
@@ -247,7 +247,7 @@ export default function Tables({
       </h2>
 
       {/* Table hanya tampil di desktop (lg ke atas) */}
-      <div className="relative overflow-x-auto sm:rounded-lg lg:mx-auto max-w-7xl mt-8 pb-8 mx-3 hidden lg:block">
+      <div className="relative overflow-x-auto sm:rounded-lg md:mx-auto max-w-7xl mt-8 pb-8 mx-3 hidden md:w-[96%] md:block">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 shadow-sm shadow-teal-800 rounded-b-xl overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr className="h-10">
@@ -414,9 +414,9 @@ export default function Tables({
         </table>
       </div>
 
-      {/* List 1 kolom hanya tampil di mobile/tablet (sm/md) */}
+      {/* List 1 kolom hanya tampil di mobile */}
       <div
-        className="lg:hidden mt-4 mx-4 block gap-x-4 gap-y-10"
+        className="md:hidden mt-4 mx-4 block gap-x-4 gap-y-10"
         style={{
           gridTemplateColumns: `repeat(${groupedByMonth.length}, minmax(0, 1fr))`,
           gridAutoFlow: "column",
@@ -451,7 +451,7 @@ export default function Tables({
             <div key={monthGroup.month} className="mb-0 flex flex-col">
               <div className="flex flex-col items-start px-1">
                 <h3
-                  className="text-xl font-semibold text-white my-8 px-1 pb-2 cursor-pointer select-none hover:cursor-pointer hover:text-slate-300 transition-all duration-500 ease-in-out border-b-2 border-slate-300 w-full text-start"
+                  className="text-xl font-semibold text-white mb-8 mt-6 px-1 pb-2 cursor-pointer select-none hover:cursor-pointer hover:text-slate-300 transition-all duration-500 ease-in-out border-b-2 border-slate-300 w-full text-start"
                   onClick={() => handleSelectAllMonth(!isMonthAllSelected)}
                 >
                   {monthGroup.month}

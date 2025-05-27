@@ -25,11 +25,22 @@ export default function AddModal({
   useEffect(() => {
     if (editingTransaction) {
       setName(editingTransaction.name);
-      setAmount(editingTransaction.amount.replace(/[^\d]/g, "")); // Hapus format rupiah
+      setAmount(editingTransaction.amount.replace(/[^\d]/g, ""));
       setDate(editingTransaction.date);
       setSelectedCategory(editingTransaction.category);
+      setType(editingTransaction.type || "expense");
     }
   }, [editingTransaction]);
+
+  useEffect(() => {
+    if (isOpen && !editingTransaction) {
+      setName("");
+      setAmount("");
+      setDate(new Date());
+      setSelectedCategory(null);
+      setType("expense");
+    }
+  }, [isOpen, editingTransaction]);
 
   // Tambahkan event listener untuk tombol Esc
   useEffect(() => {
@@ -146,12 +157,6 @@ export default function AddModal({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen && !editingTransaction) {
-      setDate(new Date());
-    }
-  }, [isOpen, editingTransaction]);
-
   if (!isOpen) return null;
 
   return (
@@ -162,7 +167,7 @@ export default function AddModal({
       <div className="relative">
         <form
           onSubmit={handleSubmit}
-          className="bg-slate-950 w-[330px] lg:w-[600px] rounded-xl lg:rounded-lg shadow-sm shadow-teal-800 px-6 lg:px-8 pb-6 pt-0 flex flex-col justify-center items-center"
+          className="bg-slate-950 w-[330px] md:w-[420px] lg:w-[600px] rounded-xl lg:rounded-lg shadow-sm shadow-teal-800 px-6 lg:px-8 pb-6 pt-0 flex flex-col justify-center items-center"
         >
           {/* Modal header */}
           <div className="flex items-center justify-between py-4 pt-8 pb-3 lg:pb-6 border-b-2 rounded-t border-teal-800 mb-4 w-full">

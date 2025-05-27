@@ -203,14 +203,14 @@ function Chart({ categories, month, transactions }) {
         </div>
       </div>
 
-      <div className="mt-6 lg:mt-12 lg:inline-flex px-3 lg:px-32 w-full justify-start gap-0 items-start">
-        <div className="w-full lg:w-1/2 px-8 lg:px-12 lg:pr-28 flex items-center justify-center aspect-auto relative border-teal-700 lg:border-r-2 ">
+      <div className="mt-6 lg:mt-12 lg:inline-flex px-3 lg:px-32 w-full justify-start md:flex md:flex-col lg:flex-row md:justify-center md:items-center lg:justify-start gap-0 items-start lg:items-start">
+        <div className="w-full md:w-2/3 lg:w-1/2 px-8 lg:px-12 lg:pr-28 flex items-center justify-center aspect-auto relative border-teal-700 lg:border-r-2 ">
           <Doughnut data={data} options={options} />
-          <div className="absolute top-2/5 lg:top-5/12 text-center px-16 lg:px-40 flex flex-col gap-1">
-            <p className="font-black text-2xl tracking-tight lg:font-black lg:text-4xl text-teal-500 mb-[1px]">
+          <div className="absolute top-2/5 lg:top-5/12 text-center px-16 lg:px-24 flex flex-col gap-1">
+            <p className="font-black text-2xl md:text-3xl tracking-tight lg:font-black lg:text-4xl text-teal-500 mb-[1px]">
               Rp {totalAmount.toLocaleString("id-ID")}
             </p>
-            <p className="text-sm font-medium tracking-normal leading-normal lg:font-semibold lg:text-lg px-6 text-slate-300">
+            <p className="text-sm font-medium tracking-normal leading-normal lg:font-semibold md:text-base lg:text-lg md:px-12 px-6 text-slate-300">
               Kamu mengeluarkan{" "}
               <span
                 className={`font-black tracking-tight ${
@@ -228,8 +228,8 @@ function Chart({ categories, month, transactions }) {
         </div>
 
         {/* Deskription Section */}
-        <div className="z-10 w-auto !h-full lg:w-1/2 p-5 pt-3 border-teal-700 border-t-2 lg:border-t-0 mt-6 lg:mt-0 lg:pl-12 lg:pb-12">
-          <h6 className="mb-3 lg:mb-9 lg:font-bold text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="z-10 w-auto md:w-[96%] !h-full lg:w-1/2 p-2 pt-3 lg:border-t-0 mt-6 md:px-0 lg:mt-0 lg:pl-12 lg:pb-12 md:mx-auto lg:mx-0">
+          <h6 className="mb-3 lg:mb-7 ps-5 pb-3 text-teal-500 lg:font-bold text-xl lg:text-2xl font-bold">
             Category
           </h6>
           {categoryData.filter((category) => category.totalAmount > 0)
@@ -241,7 +241,7 @@ function Chart({ categories, month, transactions }) {
               </p>
             </div>
           ) : (
-            <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 text-sm">
+            <ul className="grid grid-cols-1 md:grid-cols-2 md:gap-x-2 lg:grid-cols-2 gap-3 lg:gap-3 lg:gap-x-4 text-sm">
               {categoryData
                 .filter((category) => category.totalAmount > 0)
                 .map((category, idx) => (
@@ -310,8 +310,6 @@ function Chart({ categories, month, transactions }) {
           )}
         </div>
       </div>
-
-      <div className="h-[2px] mx-32 mt-6 lg:mt-10 bg-slate-300"></div>
 
       {/* Calendar */}
       <div className="px-0 lg:px-26 py-2 w-full">
