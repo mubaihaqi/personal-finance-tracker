@@ -198,7 +198,7 @@ export default function Dashboard({
                 Skor Kredit :{" "}
                 <span>
                   {" "}
-                  <span className="text-accent">98 </span>/100{" "}
+                  <span className="text-accent"> {"-"} </span>/100{" "}
                 </span>
               </p>
               <p className="inline-flex justify-between">

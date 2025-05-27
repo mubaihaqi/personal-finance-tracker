@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TrashIcon from "../assets/icons/TrashIcon.svg";
 import Swal from "sweetalert2";
-import logom from "../assets/logom.png"; // atau sesuaikan path relatif dari file ini
+import logom from "../assets/logom.png";
 
 export default function Navbar({
   balance,
@@ -133,10 +133,26 @@ export default function Navbar({
               </li>
               <li>
                 <Link
+                  to="/"
+                  className="justify-between font-semibold text-base py-2 mb-1"
+                >
+                  Transaction
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/mychart"
                   className="justify-between font-semibold text-base py-2"
                 >
                   My Chart
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  className="justify-between font-semibold text-base py-2"
+                >
+                  About
                 </Link>
               </li>
               <div className="h-[2px] w-[95%] mx-auto px-2 mt-2 mb-3 rounded-full bg-teal-500/80"></div>

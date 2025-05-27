@@ -8,6 +8,7 @@ import AddModal from "./components/AddModal";
 import NotFound from "./components/NotFound";
 import Chart from "./Chart";
 import Dashboard from "./Dashboard";
+import About from "./About.jsx";
 import EditAccountModal from "./components/EditAccountModal";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -771,6 +772,7 @@ export default function App() {
             </>
           }
         />
+        <Route path="/about" element={<About />} />
         <Route
           path="/mychart"
           element={
