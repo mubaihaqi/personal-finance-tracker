@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TrashIcon from "../assets/icons/TrashIcon.svg";
 import Swal from "sweetalert2";
+import logom from "../assets/logom.png"; // atau sesuaikan path relatif dari file ini
 
 export default function Navbar({
   balance,
@@ -67,8 +68,13 @@ export default function Navbar({
         <div className="flex-1">
           <Link
             to="/"
-            className="ps-4 text-xl text-teal-500 hover:text-teal-600 hover:scale-90 duration-700 transition-all ease-in-out normal-case font-bold"
+            className="ps-4 flex items-center gap-2 text-xl text-teal-500 hover:text-teal-600 normal-case font-bold"
           >
+            <img
+              src={logom}
+              alt="M-Tracker Logo"
+              className="w-8 h-8 object-contain"
+            />
             M-Tracker
           </Link>
         </div>

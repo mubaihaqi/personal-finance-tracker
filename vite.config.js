@@ -9,7 +9,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss(), svgr()],
-    base: env.VITE_BASE_PATH || "/personal-finance-tracker",
+    base:
+      mode === "production"
+        ? env.VITE_BASE_PATH || "/personal-finance-tracker"
+        : "/",
     server: {
       host: "0.0.0.0",
       port: 3000,

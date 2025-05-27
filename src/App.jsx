@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import Tables from "./components/Tables";
 import AddModal from "./components/AddModal";
+import NotFound from "./components/NotFound";
 import Chart from "./Chart";
 import Dashboard from "./Dashboard";
 import EditAccountModal from "./components/EditAccountModal";
@@ -780,6 +781,7 @@ export default function App() {
             />
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <EditAccountModal
         isOpen={isAddAccountOpen}
