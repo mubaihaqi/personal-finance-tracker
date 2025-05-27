@@ -27,7 +27,9 @@ export default function Tables({
 }) {
   const [dropdownOpenId, setDropdownOpenId] = useState(null);
   const [previewPhoto, setPreviewPhoto] = useState(null);
+  const [monthDropdownOpen, setMonthDropdownOpen] = useState(false);
   const dropdownModalRef = useRef(null);
+  const monthDropdownRef = useRef(null);
 
   const toggleDropdown = (id) => {
     setDropdownOpenId((prevId) => (prevId === id ? null : id));
@@ -49,6 +51,23 @@ export default function Tables({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpenId]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        monthDropdownRef.current &&
+        !monthDropdownRef.current.contains(event.target)
+      ) {
+        setMonthDropdownOpen(false);
+      }
+    }
+    if (monthDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [monthDropdownOpen]);
 
   const showAlert = (transactionId) => {
     Swal.fire({
@@ -180,7 +199,7 @@ export default function Tables({
 
   return (
     <>
-      <h2 className="font-bold text-lg mx-auto lg:mx-32 px-2 md:px-1 w-[92%] md:w-[96%] lg:w-auto md:mx-auto lg:px-4 mt-8 md:mt-6 lg:mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center">
+      <h2 className="font-bold text-lg mx-auto lg:mx-32 px-2 md:px-1 w-[92%] md:w-[96%] lg:w-auto md:mx-auto lg:px-4 mt-8 md:mt-6 lg:mt-8 border-b-2 pb-4 text-teal-500 border-slate-300 text-center lg:text-start flex justify-between items-center relative">
         <p
           className="hover:cursor-pointer hover:text-accent"
           onClick={() => onSelectAllTransactions(!isAllSelected)}
@@ -188,61 +207,60 @@ export default function Tables({
           My Transactions
         </p>
 
-        <button
-          id="dropdownDefaultButton"
-          data-dropdown-toggle="dropdown"
-          className="text-white btn btn-outline btn-accent border-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center "
-          type="button"
-        >
-          Month
-          <svg
-            className="w-2.5 h-2.5 ms-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 10 6"
+        {/* Month Filter Button */}
+        <div className="relative">
+          <button
+            className="text-white btn btn-outline btn-accent border-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+            type="button"
+            onClick={() => setMonthDropdownOpen((v) => !v)}
           >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m1 1 4 4 4-4"
-            />
-          </svg>
-        </button>
-
-        {/* Filter Month */}
-        <div
-          id="dropdown"
-          className="z-50 p-3 hidden bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800"
-        >
-          <h6 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white border-teal-800 border-b-2 pb-1">
             Month
-          </h6>
-          <ul
-            className="space-y-2 py-1 text-sm text-gray-700 dark:text-gray-200"
-            aria-labelledby="dropdownDefaultButton"
-          >
-            {month.map((m) => (
-              <li key={m.id} className="flex justify-start">
-                <input
-                  id={m.name}
-                  type="checkbox"
-                  value={m.name}
-                  checked={selectedMonths.includes(m.name)}
-                  className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  onChange={() => onMonthChange(m.name)}
-                />
-                <label
-                  htmlFor={m.name}
-                  className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  {m.name}
-                </label>
-              </li>
-            ))}
-          </ul>
+            <svg
+              className="w-2.5 h-2.5 ms-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 6"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 4 4 4-4"
+              />
+            </svg>
+          </button>
+          {monthDropdownOpen && (
+            <div
+              ref={monthDropdownRef}
+              className="z-50 p-3 bg-white divide-y divide-gray-100 rounded-lg w-32 dark:bg-gray-700 shadow-sm shadow-teal-800 absolute right-0 mt-2"
+            >
+              <h6 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white border-teal-800 border-b-2 pb-1">
+                Month
+              </h6>
+              <ul className="space-y-2 py-1 text-sm text-gray-700 dark:text-gray-200">
+                {month.map((m) => (
+                  <li key={m.id} className="flex justify-start">
+                    <input
+                      id={m.name}
+                      type="checkbox"
+                      value={m.name}
+                      checked={selectedMonths.includes(m.name)}
+                      className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                      onChange={() => onMonthChange(m.name)}
+                    />
+                    <label
+                      htmlFor={m.name}
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
+                      {m.name}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </h2>
 

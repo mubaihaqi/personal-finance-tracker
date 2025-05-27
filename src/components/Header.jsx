@@ -1,4 +1,6 @@
+import { useState, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
+
 export default function Header({
   onOpenModal,
   categories,
@@ -8,6 +10,24 @@ export default function Header({
   onExportCSV,
   onImportCSV,
 }) {
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const actionsRef = useRef(null);
+  const filterRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
+        setActionsOpen(false);
+      }
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setFilterOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const showAlert = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -98,13 +118,12 @@ export default function Header({
                   Add Transaction
                 </button>
 
-                <div className="flex w-full gap-2">
+                <div className="flex w-full gap-2 relative">
                   {/* Actions Feature */}
                   <button
-                    id="actionsDropdownButton"
-                    data-dropdown-toggle="actionsDropdown"
                     className="flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0"
                     type="button"
+                    onClick={() => setActionsOpen((v) => !v)}
                   >
                     <svg
                       className="-ml-1 mr-1.5 w-5 h-5"
@@ -121,13 +140,49 @@ export default function Header({
                     </svg>
                     Actions
                   </button>
+                  {actionsOpen && (
+                    <div
+                      ref={actionsRef}
+                      className="z-50 bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600 absolute left-0 top-12"
+                    >
+                      <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
+                        <li className="p-2 pb-0">
+                          <button
+                            onClick={onExportCSV}
+                            className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md mb-1"
+                          >
+                            Export to CSV
+                          </button>
+                        </li>
+                        <li className="p-2 pt-0">
+                          <label className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md cursor-pointer">
+                            Import from CSV
+                            <input
+                              type="file"
+                              accept=".csv"
+                              onChange={onImportCSV}
+                              className="hidden"
+                            />
+                          </label>
+                        </li>
+                      </ul>
+                      <div className="p-2">
+                        <button
+                          type="button"
+                          onClick={() => showAlert()}
+                          className="btn btn-soft btn-error w-full rounded-md"
+                        >
+                          Delete All
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Filter Feature */}
                   <button
-                    id="filterDropdownButton"
-                    data-dropdown-toggle="filterDropdown"
                     className="flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg btn btn-outline hover:bg-slate-600 hover:border-slate-600 border-2 focus:ring-0"
                     type="button"
+                    onClick={() => setFilterOpen((v) => !v)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -143,109 +198,51 @@ export default function Header({
                       />
                     </svg>
                     Filter
-                    <svg
-                      className="-mr-1 ml-1.5 w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        clipRule="evenodd"
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      />
-                    </svg>
                   </button>
-
-                  {/* Actions Modal */}
-                  <div
-                    id="actionsDropdown"
-                    className="z-50 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                  >
-                    <ul
-                      className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="actionsDropdownButton"
+                  {filterOpen && (
+                    <div
+                      ref={filterRef}
+                      className="z-50 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700 absolute right-0 top-12"
                     >
-                      <li className="p-2 pb-0">
-                        <button
-                          onClick={onExportCSV}
-                          className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md mb-1"
-                        >
-                          Export to CSV
-                        </button>
-                      </li>
-                      <li className="p-2 pt-0">
-                        <label className="btn btn-soft btn-accent w-full border-2 px-4 py-2 text-sm font-medium rounded-md cursor-pointer">
-                          Import from CSV
+                      <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                        Category
+                      </h6>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-center" key="income-category">
                           <input
-                            type="file"
-                            accept=".csv"
-                            onChange={onImportCSV}
-                            className="hidden"
-                          />
-                        </label>
-                      </li>
-                    </ul>
-                    <div className="p-2">
-                      <button
-                        type="button"
-                        onClick={() => showAlert()}
-                        className="btn btn-soft btn-error w-full rounded-md"
-                      >
-                        Delete All
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Filter Modal */}
-                  <div
-                    id="filterDropdown"
-                    className="z-50 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
-                  >
-                    <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                      Category
-                    </h6>
-                    <ul
-                      className="space-y-2 text-sm"
-                      aria-labelledby="dropdownDefault"
-                    >
-                      {/* Tambahkan opsi Pemasukan */}
-                      <li className="flex items-center" key="income-category">
-                        <input
-                          id="income-category"
-                          type="checkbox"
-                          value="Pemasukan"
-                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          onChange={() => onCategoryChange("Pemasukan")}
-                        />
-                        <label
-                          htmlFor="income-category"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                        >
-                          Pemasukan
-                        </label>
-                      </li>
-                      {/* Opsi category lainnya */}
-                      {categories.map((category) => (
-                        <li className="flex items-center" key={category.id}>
-                          <input
-                            id={category.id}
+                            id="income-category"
                             type="checkbox"
-                            value={category.name}
+                            value="Pemasukan"
                             className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                            onChange={() => onCategoryChange(category.name)}
+                            onChange={() => onCategoryChange("Pemasukan")}
                           />
                           <label
-                            htmlFor={category.id}
+                            htmlFor="income-category"
                             className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
                           >
-                            {category.name}
+                            Pemasukan
                           </label>
                         </li>
-                      ))}
-                    </ul>
-                  </div>
+                        {categories.map((category) => (
+                          <li className="flex items-center" key={category.id}>
+                            <input
+                              id={category.id}
+                              type="checkbox"
+                              value={category.name}
+                              className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                              onChange={() => onCategoryChange(category.name)}
+                            />
+                            <label
+                              htmlFor={category.id}
+                              className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                            >
+                              {category.name}
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
